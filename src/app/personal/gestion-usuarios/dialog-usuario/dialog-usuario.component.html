@@ -1,0 +1,113 @@
+
+<form [formGroup]="form" (ngSubmit)="save()" class="basic-form" [ngClass]="{'custom': true}">
+  <h1 mat-dialog-title>{{title}}</h1>
+  <mat-dialog-content>
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="nombre1" placeholder="Ingrese el primer nombre">
+      </mat-form-field>
+      <small *ngIf="form.controls['nombre1'].hasError('required') && form.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre es requerido)</small>
+      <small *ngIf="form.controls['nombre1'].hasError('minlength') && form.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre minimo de 3 letras) </small>
+      <small *ngIf="form.controls['nombre1'].hasError('maxlength') && form.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre maximo de 40 letras) </small>
+    </div>
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="nombre2" placeholder="Ingrese el segundo nombre">
+      </mat-form-field>
+      <small *ngIf="form.controls['nombre2'].hasError('minlength') && form.controls['nombre2'].touched" class="text-danger support-text"> (El segundo nombre minimo de 3 letras) </small>
+      <small *ngIf="form.controls['nombre2'].hasError('maxlength') && form.controls['nombre2'].touched" class="text-danger support-text"> (El segundo nombre maximo de 40 letras) </small>
+    </div>
+
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="apellido1" placeholder="Ingrese el primer apellido">
+      </mat-form-field>
+      <small *ngIf="form.controls['apellido1'].hasError('required') && form.controls['apellido1'].touched" class="text-danger support-text"> (El primer apellido es requeridos) </small>
+      <small *ngIf="form.controls['apellido1'].hasError('minlength') && form.controls['apellido1'].touched" class="text-danger support-text"> (Los primer apellido minimo de 5 letras) </small>
+      <small *ngIf="form.controls['apellido1'].hasError('maxlength') && form.controls['apellido1'].touched" class="text-danger support-text"> (El primer apellido maximo de 40 letras) </small>
+    </div>
+
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="apellido2" placeholder="Ingrese el segundo apellido">
+      </mat-form-field>
+      <small *ngIf="form.controls['apellido2'].hasError('required') && form.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido es requerido) </small>
+      <small *ngIf="form.controls['apellido2'].hasError('minlength') && form.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido minimo de 5 letras) </small>
+      <small *ngIf="form.controls['apellido2'].hasError('maxlength') && form.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido maximo de 40 letras) </small>
+    </div>
+
+
+    <div>
+      <mat-form-field>
+        <mat-select formControlName="tipoIdentificacion" placeholder="Tipo Identificacion" [(value)]="selectedTipoIdentificacion">
+          <mat-option *ngFor="let tipoIdentificacion of tiposIdentificacionJSON" [value]="tipoIdentificacion.codigo">
+            {{tipoIdentificacion.nombre}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <small *ngIf="form.controls['tipoIdentificacion'].hasError('required') && form.controls['tipoIdentificacion'].touched" class="text-danger support-text">El tipo identificacion es requerido.</small>
+    </div>
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="identificacion" placeholder="Ingrese la identificacion">
+      </mat-form-field>
+      <small *ngIf="form.controls['identificacion'].hasError('required') && form.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion es requerida) </small>
+      <small *ngIf="form.controls['identificacion'].hasError('minlength') && form.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion minimo de 5 letras) </small>
+      <small *ngIf="form.controls['identificacion'].hasError('maxlength') && form.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion maximo de 40 letras) </small>
+    </div>
+
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="direccion" placeholder="Ingrese la direccion">
+      </mat-form-field>
+      <small *ngIf="form.controls['direccion'].hasError('required') && form.controls['direccion'].touched" class="text-danger support-text"> (La direccion es requerida) </small>
+      <small *ngIf="form.controls['direccion'].hasError('minlength') && form.controls['direccion'].touched" class="text-danger support-text"> (La direccion minimo de 5 letras) </small>
+      <small *ngIf="form.controls['direccion'].hasError('maxlength') && form.controls['direccion'].touched" class="text-danger support-text"> (La direccion maximo de 40 letras) </small>
+    </div>
+
+
+    <div class="errors-container">
+      <mat-form-field>
+        <input matInput formControlName="telefono" placeholder="Ingrese el telefono">
+      </mat-form-field>
+      <small *ngIf="form.controls['telefono'].hasError('required') && form.controls['telefono'].touched" class="text-danger support-text"> (El telefono es requeridos) </small>
+      <small *ngIf="form.controls['telefono'].hasError('minlength') && form.controls['telefono'].touched" class="text-danger support-text"> (Los telefono minimo de 5 letras) </small>
+      <small *ngIf="form.controls['telefono'].hasError('maxlength') && form.controls['telefono'].touched" class="text-danger support-text"> (El telefono maximo de 40 letras) </small>
+    </div>
+
+
+    <div>
+      <mat-form-field>
+        <mat-select formControlName="roles" placeholder="Perfiles en el Sistema" multiple>
+          <mat-option *ngFor="let rol of rolesJSON" [value]="rol.codigo">
+            {{rol.nombre}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <small *ngIf="form.controls['roles'].hasError('required') && form.controls['roles'].touched" class="text-danger support-text">El perfil es requerido.</small>
+    </div>
+
+
+    <div>
+      <mat-form-field>
+        <button mat-fab>
+          <mat-icon aria-label="Foto de Usuario">favorite</mat-icon>
+        </button>
+      </mat-form-field>
+
+    </div>
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">{{accion}}</button>
+    <button mat-raised-button type="button" mat-dialog-close>Cancelar</button>
+  </mat-dialog-actions>
+</form>

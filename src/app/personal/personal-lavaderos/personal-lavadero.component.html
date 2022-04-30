@@ -1,0 +1,149 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de Personal del lavadero por el ADMINISTRADOR DEL SISTEMA -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Gestion del Personal</mat-card-title>
+        <mat-card-subtitle>Administrador Gestione el personal de cada empresa</mat-card-subtitle>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="personalLavaderoSelected" (click)="mostrarSeccionAdicionar()" >Adicionar</button>
+          <button mat-raised-button color="primary" [disabled]="!personalLavaderoSelected" (click)="eliminarObject()">Eliminar</button>
+        </div>
+
+        <br/>
+
+
+        <table datatable [dtOptions]="dtOptions" class="row-border hover" style="width: 100%">
+          <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Empresa</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Identificacion</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="personalLavaderoList?.length != 0">
+          <tr *ngFor="let personalLavadero of personalLavaderoList; let row = index" [class.selected]="rowSelected === 'selected'+row" (click)="ClickRow(row, 'selected'+row)">
+            <td>{{ personalLavadero.codigo }}</td>
+            <td>{{ personalLavadero.lavadero.nombre }}</td>
+            <td>{{ personalLavadero.usuario.nombre1 }}</td>
+            <td>{{ personalLavadero.usuario.apellido1 }}</td>
+            <td>{{ personalLavadero.usuario.identificacion }}</td>
+            <td>
+              <mat-slide-toggle [checked]="personalLavadero.estado === 0 ? false : true" (change)="changeState(personalLavadero.codigo, personalLavadero.estado, $event)">
+                {{personalLavadero.estado === 0 ? 'Inactivo' : 'Activo'}}
+              </mat-slide-toggle>
+            </td>
+          </tr>
+          </tbody>
+          <tbody *ngIf="personalLavaderoList?.length == 0">
+          <tr>
+            <td colspan="3" class="no-data-available">No hay registros!</td>
+          </tr>
+          <tbody>
+        </table>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+    <mat-card *ngIf="accion == 'ADICIONAR'">
+      <mat-card-content>
+        <mat-card-title>Vinculacion de Personal a la Empresa</mat-card-title>
+        <mat-card-subtitle>Administrador vincule los usuarios de cada empresa</mat-card-subtitle>
+
+        <mat-horizontal-stepper [linear]="isLinear">
+          <mat-step [stepControl]="seleccionoLavaderoActual">
+
+              <ng-template matStepLabel>Seleccion Empresa</ng-template>
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                  <button mat-raised-button color="primary" (click)="buscarLavaderosDialog()">Buscar Empresa <mat-icon>find_in_page</mat-icon></button>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoLavaderoActual">
+                  <mat-card class="oh text-center little-profile">
+                    <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                    <mat-card-content>
+                      <div class="pro-img">
+                        <img [src]="objectImageToShow1" alt="Lavadero" width="100" *ngIf="!isImageLoading1 && imageLoadedComplete1">
+                      </div>
+                      <h3 class="m-b-0">{{lavaderoSeleccionadoActual.nombre}}</h3>
+                      <h6 class="m-t-0 ">{{lavaderoSeleccionadoActual.descripcion}}</h6>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+
+              </div>
+
+
+
+              <div>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoLavaderoActual">Siguiente</button>
+              </div>
+
+          </mat-step>
+          <mat-step [stepControl]="seleccionoUsuarioActual">
+
+              <ng-template matStepLabel>Seleccion Usuario</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarUsuariosDialog()">Buscar Usuario <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoUsuarioActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow2" alt="Lavadero" width="100" *ngIf="!isImageLoading2 && imageLoadedComplete2">
+                    </div>
+                    <h3 class="m-b-0">{{usuarioSeleccionadoActual.nombre1}} {{usuarioSeleccionadoActual.apellido1}}</h3>
+                    <h6 class="m-t-0 ">{{usuarioSeleccionadoActual.identificacion}} &amp; {{usuarioSeleccionadoActual.email}}</h6>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+
+              <div>
+                <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoUsuarioActual">Siguiente</button>
+              </div>
+
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Confirmar Vinculacion</ng-template>
+            <h5>Por favor confirme la vinculación.</h5>
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoLavaderoActual || !seleccionoUsuarioActual" (click)="adicionar()" *ngIf="accion == 'ADICIONAR'">Vincular</button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+  </div>
+
+</div>
+

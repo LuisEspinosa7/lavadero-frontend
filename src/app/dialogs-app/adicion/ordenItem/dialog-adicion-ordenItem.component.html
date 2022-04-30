@@ -1,0 +1,161 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="basic-form" [ngClass]="{'custom': true}">
+  <h1 mat-dialog-title>{{title}}</h1>
+  <mat-dialog-content>
+
+
+
+    <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+      <!-- column -->
+      <div fxFlex.gt-sm="50" fxFlex="100" class="p-10">
+        <h4>¿Que tipo de servicio desea?</h4>
+      </div>
+
+
+      <!-- column -->
+      <div fxFlex.gt-sm="50" fxFlex="100" class="p-10 errors-container">
+        <mat-form-field>
+          <mat-select formControlName="tipoServicio" placeholder="Escoge el tipo de Servicio" (selectionChange)="cambioTipoServicio($event.value)">
+            <mat-option *ngFor="let tipoServicio of tiposServiciosJSON" [value]="tipoServicio.codigo">
+              {{tipoServicio.nombre}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <small *ngIf="form.controls['tipoServicio'].hasError('required') && form.controls['tipoServicio'].touched" class="text-danger support-text">El tipo servicio es requerido.</small>
+      </div>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+
+    <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="configuracionLavaderoServicio">
+
+      <!-- column -->
+      <div fxFlex.gt-sm="50" fxFlex="100" class="p-10">
+        <h5><b>Precio Actual del Servicio: </b> {{configuracionLavaderoServicio.precioEstandar | currency}}</h5>
+      </div>
+
+    </div>
+
+
+    <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="configuracionLavaderoServicio">
+
+      <!-- column -->
+      <div fxFlex.gt-sm="100" fxFlex="100" class="p-10" *ngIf="clienteAplicaParaPromocion">
+        <h5><b>El CLIENTE aplica para la promoción, porque consumio: {{numeroServiciosConsumidosXCliente}} servicios. El servicio le queda en: </b> {{precioFinalServicio | currency}}</h5>
+      </div>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+
+    <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="configuracionLavaderoServicio">
+
+      <!-- column -->
+      <div fxFlex.gt-sm="40" fxFlex="40" class="p-10">
+        <h4>¿Quien va a realizar el servicio?</h4>
+      </div>
+
+
+      <!-- column -->
+      <div fxFlex.gt-sm="50" fxFlex="50" >
+        <button mat-raised-button color="primary" type="button" (click)="listarPersonalDisponible()"> Listar Trabajadores <mat-icon>people</mat-icon></button>
+      </div>
+
+    </div>
+
+
+    <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="configuracionLavaderoServicio && personalDisponibleJSON.length > 0">
+
+      <!-- column -->
+      <div fxFlex.gt-sm="80" fxFlex="100" class="p-10 errors-container">
+        <mat-form-field>
+          <mat-select formControlName="tecnico" placeholder="Seleccionar el Trabajador Tecnicos" multiple>
+            <mat-option *ngFor="let tecnico of personalDisponibleJSON" [value]="tecnico.codigo" (onSelectionChange)="cambioTecnico($event)">
+              {{tecnico.usuario.nombre1}} {{tecnico.usuario.apellido1}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <small *ngIf="form.controls['tecnico'].hasError('required') && form.controls['tecnico'].touched" class="text-danger support-text">El tecnico es requerido.</small>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="configuracionLavaderoServicio && personalDisponibleJSON.length > 0 && tecnicosSelected.length > 0">
+
+      <mat-card>
+        <mat-card-content>
+          <mat-card-title>Trabajador Seleccionado:</mat-card-title>
+
+          <div class="responsive-table" *ngIf="tecnicosSelected.length > 0">
+            <mat-table #table [dataSource]="dataSource">
+
+              <!-- Position Column -->
+              <ng-container matColumnDef="index">
+                <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                <mat-cell *matCellDef="let element; let i = index;">
+                  <span class="header-label">N°:</span>
+                  {{i + 1}}
+                </mat-cell>
+              </ng-container>
+
+              <!-- Nombre Column -->
+              <ng-container matColumnDef="nombre1">
+                <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <span class="header-label">Nombre:</span>
+                  {{element.usuario.nombre1}}
+                </mat-cell>
+              </ng-container>
+
+              <!-- Nombre Column -->
+              <ng-container matColumnDef="apellido1">
+                <mat-header-cell *matHeaderCellDef> Apellido </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <span class="header-label">Apellido:</span>
+                  {{element.usuario.apellido1}}
+                </mat-cell>
+              </ng-container>
+
+              <!-- Tipo Pago Column -->
+              <ng-container matColumnDef="tipoPago">
+                <mat-header-cell *matHeaderCellDef> Tipo Pago </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <span class="header-label">Tipo Pago:</span>
+                  {{element.tipoPago.nombre}}
+                </mat-cell>
+              </ng-container>
+
+              <!-- Pago Column -->
+              <ng-container matColumnDef="pago">
+                <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <span class="header-label">Valor:</span>
+                  {{element.valorPago}}
+                </mat-cell>
+              </ng-container>
+
+
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="warn" type="submit" [disabled]="!form.valid">{{accion}} <mat-icon>assignment_turned_in</mat-icon> </button>
+    <button mat-raised-button type="button" mat-dialog-close>Cancelar</button>
+  </mat-dialog-actions>
+</form>
+

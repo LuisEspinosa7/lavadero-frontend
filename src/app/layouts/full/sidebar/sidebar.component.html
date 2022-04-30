@@ -1,0 +1,400 @@
+<!-- ============================================================== -->
+<!-- sidebar -->
+<!-- ============================================================== -->
+<div class="user-profile" style="background: url(assets/images/background/user-info.jpg) no-repeat;">
+    <!-- User profile image -->
+    <div class="profile-img">
+        <img [src]="userImageToShow" alt="Imagen de Usuario" *ngIf="!isImageLoading && imageLoadedComplete">
+        <img src="assets/images/users/default.png" alt="No se encontro imagen" *ngIf="defaultImageActive">
+    </div>
+    <!-- User profile text-->
+    <!-- ============================================================== -->
+    <!-- Profile - style you can find in header.scss -->
+    <!-- ============================================================== -->
+    <div class="profile-text">
+        <a [matMenuTriggerFor]="sdprofile" class=""> {{usuario.nombre1}} {{usuario.apellido1}}
+            <i class="ti-angle-down font-12 m-l-5"></i>
+        </a>
+    </div>
+    <mat-menu #sdprofile="matMenu" class="mymegamenu">
+        <button (click)="goProfile()" mat-menu-item>
+            <mat-icon>account_box</mat-icon> Perfil
+        </button>
+        <button (click)="logOut()" mat-menu-item>
+            <mat-icon>exit_to_app</mat-icon> Salir
+        </button>
+    </mat-menu>
+</div>
+
+
+
+<mat-nav-list appAccordion>
+
+    <mat-list-item appAccordionLink >
+        <div class="saperator text-muted">
+            <span>Inicio</span>
+        </div>
+    </mat-list-item>
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="dashboards">
+        <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" >
+            <mat-icon>widgets</mat-icon>
+            <span>Dashboard</span>
+            <span fxFlex></span>
+            <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+        </a>
+
+        <mat-nav-list class="sub-item">
+            <mat-list-item routerLinkActive="selected">
+                <a [routerLink]="['/', 'dashboards', 'dashboard1' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+                    routerLinkActive="selected">Panel Control</a>
+            </mat-list-item>
+
+            <mat-list-item routerLinkActive="selected">
+                <a [routerLink]="['/', 'dashboards', 'dashboard2' ]" *ngIf="perfil === 'ROLE_PROPIETARIO'" class="relative"
+                    routerLinkActive="selected">Panel Control</a>
+            </mat-list-item>
+
+            <mat-list-item routerLinkActive="selected">
+              <a [routerLink]="['/', 'dashboards', 'dashboard3' ]" *ngIf="perfil === 'ROLE_OPERARIO'" class="relative"
+                 routerLinkActive="selected">Panel Control</a>
+            </mat-list-item>
+        </mat-nav-list>
+
+    </mat-list-item>
+
+
+    <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR'">
+      <div class="saperator text-muted">
+        <span>Modulo de Configuracion</span>
+      </div>
+    </mat-list-item>
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+        <mat-icon>settings</mat-icon>
+        <span>Parametros</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'parametros', 'tipos-liquidacion' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Tipos Liquidacion</a>
+        </mat-list-item>
+
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'parametros', 'tipos-vehiculos' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Tipos Vehiculos</a>
+        </mat-list-item>
+
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'parametros', 'marcas' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Marcas</a>
+        </mat-list-item>
+
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'parametros', 'tipos-servicios' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Tipos Servicios</a>
+        </mat-list-item>
+
+      </mat-nav-list>
+
+    </mat-list-item>
+
+
+
+    <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'">
+      <div class="saperator text-muted">
+        <span>Modulo Administrativo</span>
+      </div>
+    </mat-list-item>
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+        <mat-icon>store</mat-icon>
+        <span>Establecimientos</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'administrativo', 'gestion-lavaderos' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Empresas</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-list-item>
+
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+        <mat-icon>shop</mat-icon>
+        <span>Precios</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'administrativo', 'configurar-servicios' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Configurar Servicios</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-list-item>
+
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" >
+        <mat-icon>attach_money</mat-icon>
+        <span>Liquidaciones</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'administrativo', 'liquidar-tecnicos' ]" *ngIf="perfil === 'ROLE_OPERARIO'" class="relative"
+             routerLinkActive="selected">Tecnicos</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'administrativo', 'liquidar-comision' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+             routerLinkActive="selected">Comisiones</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-list-item>
+
+
+
+
+    <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+        <div class="saperator text-muted">
+            <span>Modulo de Personal</span>
+        </div>
+    </mat-list-item>
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+        <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+            <mat-icon>person</mat-icon>
+            <span>Usuarios</span>
+            <span fxFlex></span>
+            <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+        </a>
+
+        <mat-nav-list class="sub-item">
+            <mat-list-item routerLinkActive="selected">
+                <a [routerLink]="['/', 'personal', 'gestion-usuarios' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+                    routerLinkActive="selected">Gestionar Todos</a>
+            </mat-list-item>
+        </mat-nav-list>
+
+        <mat-nav-list class="sub-item">
+          <mat-list-item routerLinkActive="selected">
+            <a [routerLink]="['/', 'personal', 'personal-lavadero' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" class="relative"
+               routerLinkActive="selected">Personal de Empresas</a>
+          </mat-list-item>
+        </mat-nav-list>
+
+    </mat-list-item>
+
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR'" >
+        <mat-icon>supervisor_account</mat-icon>
+        <span>Funcionarios</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'personal', 'funcionario-servicio' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR'"  class="relative"
+             routerLinkActive="selected">Asignar Servicios</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-list-item>
+
+
+
+  <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" >
+    <div class="saperator text-muted">
+      <span>Modulo de Servicios</span>
+    </div>
+  </mat-list-item>
+
+  <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+    <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" >
+      <mat-icon>supervised_user_circle</mat-icon>
+      <span>Clientes</span>
+      <span fxFlex></span>
+      <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-nav-list class="sub-item">
+      <mat-list-item routerLinkActive="selected">
+        <a [routerLink]="['/', 'servicios', 'gestion-clientes' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" class="relative"
+           routerLinkActive="selected">Gestion Clientes</a>
+      </mat-list-item>
+    </mat-nav-list>
+
+  </mat-list-item>
+
+
+    <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+      <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" >
+        <mat-icon>directions_car</mat-icon>
+        <span>Vehiculos</span>
+        <span fxFlex></span>
+        <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+      </a>
+
+      <mat-nav-list class="sub-item">
+        <mat-list-item routerLinkActive="selected">
+          <a [routerLink]="['/', 'servicios', 'gestion-vehiculos' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_OPERARIO'" class="relative"
+             routerLinkActive="selected">Gestion Vehiculos</a>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-list-item>
+
+  <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+    <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_OPERARIO'" >
+      <mat-icon>local_car_wash</mat-icon>
+      <span>Ordenes de Servicio</span>
+      <span fxFlex></span>
+      <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-nav-list class="sub-item">
+      <mat-list-item routerLinkActive="selected">
+        <a [routerLink]="['/', 'servicios', 'gestion-ordenes' ]" *ngIf="perfil === 'ROLE_OPERARIO'" class="relative"
+           routerLinkActive="selected">Crear Orden</a>
+      </mat-list-item>
+    </mat-nav-list>
+
+  </mat-list-item>
+
+
+  <!--
+  <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" >
+    <div class="saperator text-muted">
+      <span>Modulo de Estadisticas</span>
+    </div>
+  </mat-list-item>
+
+  <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+    <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" >
+      <mat-icon>trending_up</mat-icon>
+      <span>Estadisticas</span>
+      <span fxFlex></span>
+      <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-nav-list class="sub-item">
+      <mat-list-item routerLinkActive="selected">
+        <a [routerLink]="['/', 'estadisticas', 'estadisticas' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" class="relative"
+           routerLinkActive="selected">Estadisticas</a>
+      </mat-list-item>
+    </mat-nav-list>
+
+  </mat-list-item>
+
+  -->
+
+
+  <!--
+  <mat-list-item appAccordionLink *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" >
+    <div class="saperator text-muted">
+      <span>Modulo de Reportes</span>
+    </div>
+  </mat-list-item>
+
+  <mat-list-item appAccordionLink routerLinkActive="selected" group="usuarios">
+    <a class="" appAccordionToggle href="javascript:;" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" >
+      <mat-icon>poll</mat-icon>
+      <span>Reportes</span>
+      <span fxFlex></span>
+      <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-nav-list class="sub-item">
+      <mat-list-item routerLinkActive="selected">
+        <a [routerLink]="['/', 'reportes', 'reportes' ]" *ngIf="perfil === 'ROLE_ADMINISTRADOR' || perfil === 'ROLE_PROPIETARIO' || perfil === 'ROLE_OPERARIO'" class="relative"
+           routerLinkActive="selected">Reportes</a>
+      </mat-list-item>
+    </mat-nav-list>
+
+  </mat-list-item>
+  -->
+
+
+
+</mat-nav-list>
+
+
+
+<!--
+<mat-nav-list appAccordion>
+    <mat-list-item appAccordionLink *ngFor="let menuitem of menuItems.getMenuitem()" routerLinkActive="selected" group="{{menuitem.state}}">
+        <a class="" appAccordionToggle [routerLink]="['/', menuitem.state]" *ngIf="menuitem.type === 'link'">
+            <mat-icon>{{ menuitem.icon }}</mat-icon>
+            <span>{{ menuitem.name }}</span>
+            <span fxFlex></span>
+            <span class="label label-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+        </a>
+
+        <a class="" appAccordionToggle href="{{menuitem.state}}" *ngIf="menuitem.type === 'extLink'">
+            <mat-icon>{{ menuitem.icon }}</mat-icon>
+            <span>{{ menuitem.name }}</span>
+            <span fxFlex></span>
+            <span class="label label-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+        </a>
+        <a class="" appAccordionToggle href="{{menuitem.state}}" target="_blank" *ngIf="menuitem.type === 'extTabLink'">
+            <mat-icon>{{ menuitem.icon }}</mat-icon>
+            <span>{{ menuitem.name}}</span>
+            <span fxFlex></span>
+            <span class="label label-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+        </a>
+
+        <a class="" appAccordionToggle href="javascript:;" *ngIf="menuitem.type === 'sub' && roleMatch(menuitem.roles)" >
+            <mat-icon>{{ menuitem.icon }}</mat-icon>
+            <span>{{ menuitem.name }}</span>
+            <span fxFlex></span>
+            <span class="label label-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+            <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+        </a>
+        <mat-nav-list class="sub-item" *ngIf="menuitem.type === 'sub'">
+            <mat-list-item *ngFor="let childitem of menuitem.children" routerLinkActive="selected">
+                <a [routerLink]="['/', menuitem.state, childitem.state ]" *ngIf="childitem.type === 'link' && roleMatch(childitem.roles)" class="relative"
+                    routerLinkActive="selected">{{ childitem.name}}</a>
+            </mat-list-item>
+            <mat-list-item *ngFor="let childitem of menuitem.children">
+                <a class="" href="javascript: void(0);" *ngIf="childitem.type === 'subchild'" (click)="clickEvent()"
+                    [ngClass]="status ? 'selected' : ''">
+                    <span>{{ childitem.name }}</span>
+                    <span fxFlex></span>
+                    <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+                </a>
+                <mat-nav-list class="child-sub-item" *ngIf="childitem.type === 'subchild'">
+                    <mat-list-item *ngFor="let child of childitem.subchildren" routerLinkActive="selected">
+                        <a [routerLink]="['/', menuitem.state, childitem.state, child.state ]" routerLinkActive="selected">{{child.name}}</a>
+                    </mat-list-item>
+                </mat-nav-list>
+            </mat-list-item>
+
+        </mat-nav-list>
+
+        <div class="saperator text-muted" *ngIf="menuitem.type === 'saperator'">
+            <span>{{ menuitem.name }}</span>
+        </div>
+    </mat-list-item>
+</mat-nav-list>
+-->

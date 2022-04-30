@@ -1,0 +1,272 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de Vehiculos por el ADMINISTRADOR DEL SISTEMA y OPERARIO -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Gestion de los Vehiculos</mat-card-title>
+        <mat-card-subtitle>Gestione los vehiculos del sistema</mat-card-subtitle>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="accion == 'BUSCAR'" (click)="mostrarSeccionBuscar()" >Buscar <mat-icon>find_in_page</mat-icon></button>
+          <button mat-raised-button color="primary" [disabled]="accion == 'ADICIONAR'" (click)="mostrarSeccionAdicionar()" >Adicionar <mat-icon>add_box</mat-icon></button>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-card *ngIf="accion == 'BUSCAR'">
+      <mat-card-content>
+        <mat-card-title>Busqueda de vehiculo</mat-card-title>
+        <mat-card-subtitle>Busque un vehiculo por placa</mat-card-subtitle>
+
+        <form [formGroup]="busquedaFormGroup" class="basic-form">
+
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingVehiculo"></mat-progress-bar>
+
+
+          <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="!loadingVehiculo">
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+              <mat-form-field>
+                <input matInput formControlName="plac" placeholder="Ingrese la Placa">
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['plac'].hasError('required') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa es requerida)</small>
+              <small *ngIf="busquedaFormGroup.controls['plac'].hasError('minlength') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa minimo de 5 letras) </small>
+              <small *ngIf="busquedaFormGroup.controls['plac'].hasError('maxlength') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa maximo de 10 letras) </small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+              <button mat-raised-button color="primary" [disabled]="!busquedaFormGroup.valid" (click)="buscarVehiculo()">Buscar <mat-icon>find_in_page</mat-icon></button>
+            </div>
+
+          </div>
+
+          <mat-card *ngIf="vehiculoEncontrado">
+
+            <mat-card-content>
+              <mat-card-title>Datos Basicos:</mat-card-title>
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="vehiculoEncontrado">
+                <!-- column -->
+                <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                  <h5><b>Propietario:</b> {{vehiculoEncontradoObj.usuario.nombre1}} {{vehiculoEncontradoObj.usuario.apellido1}}</h5>
+                </div>
+                <!-- column -->
+                <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                  <h5><b>Tipo Vehiculo:</b> {{vehiculoEncontradoObj.tipoVehiculo.nombre}}</h5>
+                </div>
+                <!-- column -->
+                <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                  <h5><b>Marca:</b> {{vehiculoEncontradoObj.marca.nombre}}</h5>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                  <button mat-raised-button color="warn" [disabled]="!vehiculoEncontradoObj" (click)="cargarVehiculoUpdate()">Actualizar Vehiculo <mat-icon>settings</mat-icon></button>
+                </div>
+              </div>
+
+
+            </mat-card-content>
+
+          </mat-card>
+
+        </form>
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <!--------------------------------------------------------------------->
+
+    <mat-card *ngIf="accion == 'ADICIONAR' || accion == 'MODIFICAR'">
+      <mat-card-content>
+        <mat-card-title>Creacion o Actualizacion de vehiculo</mat-card-title>
+        <mat-card-subtitle>Agrege o actualize un vehiculo en el sistema</mat-card-subtitle>
+
+        <mat-vertical-stepper [linear]="isLinear">
+          <mat-step [stepControl]="seleccionoUsuarioActual">
+
+            <ng-template matStepLabel>Seleccion de Cliente</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarClientesDialog()">Buscar Cliente <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoUsuarioActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow1" alt="Cliente" width="100" *ngIf="!isImageLoading1 && imageLoadedComplete1">
+                    </div>
+                    <h3 class="m-b-0">{{usuarioSeleccionadoActual.nombre1}} {{usuarioSeleccionadoActual.apellido1}}</h3>
+                    <h6 class="m-t-0 ">{{usuarioSeleccionadoActual.identificacion}} &amp; {{usuarioSeleccionadoActual.email}}</h6>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+            <div>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoUsuarioActual">Siguiente <mat-icon>redo</mat-icon></button>
+            </div>
+
+          </mat-step>
+
+
+
+          <mat-step [stepControl]="seleccionoTipoVehiculoActual">
+
+            <ng-template matStepLabel>Seleccion Tipo Vehiculo</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarTipoVehiculosDialog()">Buscar Tipo Vehiculo <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoTipoVehiculoActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow2" alt="Tipo Vehiculo" width="100" *ngIf="!isImageLoading2 && imageLoadedComplete2">
+                    </div>
+                    <h3 class="m-b-0">{{tipoVehiculoSeleccionadoActual.nombre}} </h3>
+                    <h6 class="m-t-0 ">{{tipoVehiculoSeleccionadoActual.descripcion}} </h6>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoTipoVehiculoActual">Siguiente <mat-icon>redo</mat-icon></button>
+            </div>
+
+          </mat-step>
+
+
+
+
+
+          <mat-step [stepControl]="seleccionoMarcaActual">
+
+            <ng-template matStepLabel>Seleccion Marca</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarMarcasDialog()">Buscar Marca <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoMarcaActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow3" alt="Marca" width="100" *ngIf="!isImageLoading3 && imageLoadedComplete3">
+                    </div>
+                    <h3 class="m-b-0">{{marcaSeleccionadoActual.nombre}} </h3>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoMarcaActual">Siguiente <mat-icon>redo</mat-icon></button>
+            </div>
+
+          </mat-step>
+
+
+
+
+          <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup" class="basic-form">
+
+              <ng-template matStepLabel>Informacion Adicional</ng-template>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="placa" placeholder="Ingrese la Placa">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['placa'].hasError('required') && firstFormGroup.controls['placa'].touched" class="text-danger support-text"> (La placa es requerida)</small>
+                  <small *ngIf="firstFormGroup.controls['placa'].hasError('minlength') && firstFormGroup.controls['placa'].touched" class="text-danger support-text"> (La placa minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['placa'].hasError('maxlength') && firstFormGroup.controls['placa'].touched" class="text-danger support-text"> (La placa maximo de 10 letras) </small>
+                </div>
+
+              </div>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput type="number" formControlName="kilometraje" placeholder="Kilometraje">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['kilometraje'].hasError('required') && firstFormGroup.controls['kilometraje'].touched" class="text-danger support-text"> (El Kilometraje es requerido) </small>
+                  <small *ngIf="firstFormGroup.controls['kilometraje'].hasError('pattern') && firstFormGroup.controls['kilometraje'].touched" class="text-danger support-text"> (Solo se permiten numeros) </small>
+                </div>
+
+              </div>
+
+
+
+              <div>
+                <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid">Siguiente <mat-icon>redo</mat-icon></button>
+              </div>
+
+            </form>
+
+          </mat-step>
+
+
+
+          <mat-step>
+            <ng-template matStepLabel>Confirmar</ng-template>
+            <h5>Por favor confirme.</h5>
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoUsuarioActual || !seleccionoTipoVehiculoActual || !seleccionoMarcaActual || !firstFormGroup.valid" (click)="adicionar()" *ngIf="accion == 'ADICIONAR'">Confirmar <mat-icon>assignment_turned_in</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoUsuarioActual || !seleccionoTipoVehiculoActual || !seleccionoMarcaActual || !firstFormGroup.valid" (click)="updateVehiculo()" *ngIf="accion == 'MODIFICAR'">Modificar <mat-icon>assignment_turned_in</mat-icon></button>
+            </div>
+          </mat-step>
+        </mat-vertical-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <!---------------------------------------------------------------------->
+
+
+  </div>
+
+</div>
+

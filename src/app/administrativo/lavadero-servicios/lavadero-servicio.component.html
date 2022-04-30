@@ -1,0 +1,291 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de servicios del lavadero por el ADMINISTRADOR DEL SISTEMA -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Gestion de Servicios de Empresas</mat-card-title>
+        <mat-card-subtitle>Administrador Gestione los servicios de cada empresa</mat-card-subtitle>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="lavaderoServicioSelected" (click)="mostrarSeccionAdicionar()" >Adicionar</button>
+          <button mat-raised-button color="primary" [disabled]="!lavaderoServicioSelected" (click)="mostrarSeccionModificar()" >Modificar</button>
+          <button mat-raised-button color="primary" [disabled]="!lavaderoServicioSelected" (click)="eliminarObject()">Eliminar</button>
+        </div>
+
+        <br/>
+
+
+        <table datatable [dtOptions]="dtOptions" class="row-border hover" style="width: 100%">
+          <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Empresa</th>
+            <th>Servicio</th>
+            <th>Precio</th>
+            <th>Comision</th>
+            <th>Promocion</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="lavaderoServiciosList?.length != 0">
+          <tr *ngFor="let lavaderoServicio of lavaderoServiciosList; let row = index" [class.selected]="rowSelected === 'selected'+row" (click)="ClickRow(row, 'selected'+row)">
+            <td>{{ lavaderoServicio.codigo }}</td>
+            <td>{{ lavaderoServicio.lavadero.nombre }}</td>
+            <td>{{ lavaderoServicio.tipoServicio.nombre }}</td>
+            <td>{{ lavaderoServicio.precioEstandar | currency }}</td>
+            <td>{{ lavaderoServicio.valorComision | currency }}</td>
+            <td>{{ lavaderoServicio.tipoPromocion.nombre }}</td>
+            <td>
+              <mat-slide-toggle [checked]="lavaderoServicio.estado === 0 ? false : true" (change)="changeState(lavaderoServicio.codigo, lavaderoServicio.estado, $event)">
+                {{lavaderoServicio.estado === 0 ? 'Inactivo' : 'Activo'}}
+              </mat-slide-toggle>
+            </td>
+          </tr>
+          </tbody>
+          <tbody *ngIf="lavaderoServiciosList?.length == 0">
+          <tr>
+            <td colspan="3" class="no-data-available">No hay registros!</td>
+          </tr>
+          <tbody>
+        </table>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-card *ngIf="accion == 'ADICIONAR' || accion == 'MODIFICAR'">
+      <mat-card-content>
+        <mat-card-title>Configuracion de servicio de la empresa</mat-card-title>
+        <mat-card-subtitle>Administrador configure cada servicio de la empresa</mat-card-subtitle>
+
+        <mat-horizontal-stepper [linear]="isLinear">
+          <mat-step [stepControl]="seleccionoLavaderoActual">
+
+            <ng-template matStepLabel>Seleccion Empresa</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarLavaderosDialog()">Buscar Empresa <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoLavaderoActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow1" alt="Lavadero" width="100" *ngIf="!isImageLoading1 && imageLoadedComplete1">
+                    </div>
+                    <h3 class="m-b-0">{{lavaderoSeleccionadoActual.nombre}}</h3>
+                    <h6 class="m-t-0 ">{{lavaderoSeleccionadoActual.descripcion}}</h6>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+
+
+            <div>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoLavaderoActual">Siguiente</button>
+            </div>
+
+          </mat-step>
+          <mat-step [stepControl]="seleccionoTipoServicioActual">
+
+            <ng-template matStepLabel>Seleccion Tipo Servicio</ng-template>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="buscarTiposServiciosDialog()">Buscar Tipo Servicio <mat-icon>find_in_page</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="25" fxFlex="100" *ngIf="seleccionoTipoServicioActual">
+                <mat-card class="oh text-center little-profile">
+                  <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                    <div class="pro-img">
+                      <img [src]="objectImageToShow2" alt="Lavadero" width="100" *ngIf="!isImageLoading2 && imageLoadedComplete2">
+                    </div>
+                    <h3 class="m-b-0">{{tipoServicioSeleccionadoActual.nombre}} </h3>
+                    <h6 class="m-t-0 ">{{tipoServicioSeleccionadoActual.descripcion}}</h6>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+            </div>
+
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoTipoServicioActual">Siguiente</button>
+            </div>
+
+          </mat-step>
+
+
+          <!--- ---------------------------------------------------------------------- -->
+
+          <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup" class="basic-form">
+
+            <ng-template matStepLabel>Informacion Monetaria</ng-template>
+
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+                <mat-card fxFlex.gt-sm="100" fxFlex="100">
+                  <!-- column -->
+                  <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                    <mat-form-field>
+                      <input matInput type="number" formControlName="precioEstandar" placeholder="Precio Estandar" (change)="cambioPrecioEstandar($event.target.value)">
+                    </mat-form-field>
+                    <small *ngIf="firstFormGroup.controls['precioEstandar'].hasError('required') && firstFormGroup.controls['precioEstandar'].touched" class="text-danger support-text"> (El Precio es requerido) </small>
+                    <small *ngIf="firstFormGroup.controls['precioEstandar'].hasError('pattern') && firstFormGroup.controls['precioEstandar'].touched" class="text-danger support-text"> (Solo se permiten numeros) </small>
+                  </div>
+
+                  <!-- column -->
+                  <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 ">
+                    <mat-chip-list>
+                      <mat-chip color="accent" selected *ngIf="valorPrecioEstandarActual">{{valorPrecioEstandarActual | currency }}</mat-chip>
+                    </mat-chip-list>
+                  </div>
+
+                </mat-card>
+
+              </div>
+
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="!correctoComision && aplicaComision">
+                <h5>Por favor digite los datos completos de la comision.</h5>
+              </div>
+
+
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                  <mat-checkbox formControlName="comision" (change)="cambioAplicaComision($event)">Aplica comision?</mat-checkbox>
+                </div>
+
+              <mat-card fxFlex.gt-sm="100" fxFlex="100">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container" *ngIf="aplicaComision">
+                  <mat-form-field>
+                    <input matInput type="number" formControlName="valorComision" placeholder="Porcentaje de comision" (change)="cambioValorComision($event.target.value)">
+                  </mat-form-field>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container" *ngIf="aplicaComision">
+                  <mat-chip-list>
+                    <mat-chip color="accent" selected *ngIf="valorComisionActual">{{valorComisionActual }}%</mat-chip>
+                  </mat-chip-list>
+                </div>
+
+              </mat-card>
+
+            </div>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="!correctoPromocion && aplicaPromocion">
+                <h5>Por favor digite los datos completos de la promocion.</h5>
+              </div>
+
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                <mat-checkbox formControlName="promocion" (change)="cambioAplicaPromocion($event)">Aplica Promocion?</mat-checkbox>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container" *ngIf="aplicaPromocion">
+                <mat-form-field>
+                  <mat-select formControlName="tipoPromocion" placeholder="Tipo Promocion" (selectionChange)="cambioTipoPromocion($event.value)" >
+                    <mat-option *ngFor="let tipoPromocion of tiposPromocionJSON" [value]="tipoPromocion.codigo" >
+                      {{tipoPromocion.nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="escogioTipoPromocion && aplicaPromocion">
+
+              <mat-card fxFlex.gt-sm="100" fxFlex="100">
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput type="number" formControlName="valorReferencia" placeholder="Ingrese valor referencia" (change)="cambioValorReferencia($event.target.value)">
+                  </mat-form-field>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10" >
+                  <mat-form-field>
+                    <input matInput type="number" formControlName="valorPromocion" placeholder="Ingrese valor de la promocion" (change)="cambioValorPromocion($event.target.value)">
+                  </mat-form-field>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-chip-list>
+                    <mat-chip color="accent" selected *ngIf="valorReferenciaActual"> Por cada {{valorReferenciaActual}} servicios </mat-chip>
+                    <mat-chip color="accent" selected *ngIf="valorPromocionActual"> {{valorPromocionActual }} {{fraseSegunPromocion}}</mat-chip>
+                  </mat-chip-list>
+                </div>
+
+              </mat-card>
+
+            </div>
+
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid || !datosMonetariosCompletos">Siguiente</button>
+            </div>
+
+            </form>
+
+          </mat-step>
+
+
+          <!--- ---------------------------------------------------------------------- -->
+
+          <mat-step>
+            <ng-template matStepLabel>Confirmacion</ng-template>
+            <h5>Por favor confirme.</h5>
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoLavaderoActual || !seleccionoTipoServicioActual || !firstFormGroup.valid || !datosMonetariosCompletos" (click)="adicionar()" *ngIf="accion == 'ADICIONAR'">Confirmar</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoLavaderoActual || !seleccionoTipoServicioActual || !firstFormGroup.valid || !datosMonetariosCompletos" (click)="editar()" *ngIf="accion == 'MODIFICAR'">Confirmar</button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+  </div>
+
+</div>
+

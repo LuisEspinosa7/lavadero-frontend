@@ -1,0 +1,146 @@
+
+
+  <h1 mat-dialog-title>{{title}}</h1>
+  <mat-dialog-content>
+
+
+    <mat-card>
+      <mat-tab-group>
+        <!-- Tab 1 -->
+        <mat-tab label="Datos Basicos">
+          <mat-card-content>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="ordenSeleccionada">
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" >
+                <h5><b>Codigo:</b> {{ordenSeleccionada.codigo}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="50" fxFlex="100">
+                <h5><b>Propietario:</b> {{ordenSeleccionada.clienteVehiculo.usuario.nombre1}} {{ordenSeleccionada.clienteVehiculo.usuario.apellido1}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" >
+                <h5><b>Tipo Vehiculo:</b> {{ordenSeleccionada.clienteVehiculo.tipoVehiculo.nombre}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" >
+                <h5><b>Placa:</b> {{ordenSeleccionada.clienteVehiculo.placa}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" >
+                <h5><b>Fecha:</b> {{ordenSeleccionada.fechaCreacion | date :'dd-MMM-yy h:mm:ss a ' }}</h5>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-tab>
+        <!-- End Tab 1 -->
+        <!-- Tab 2 -->
+        <mat-tab label="Detalles">
+          <mat-card-content>
+
+            <div class="responsive-table" *ngIf="itemsCargados">
+              <mat-table #table [dataSource]="dataSource">
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="index">
+                  <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                  <mat-cell *matCellDef="let element; let i = index;">
+                    <span class="header-label">N°:</span>
+                    {{i + 1}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Tipo Servicio Column -->
+                <ng-container matColumnDef="servicio">
+                  <mat-header-cell *matHeaderCellDef> Servicio </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Servicio:</span>
+                    {{element.tipoServicio.nombre}}
+                  </mat-cell>
+                </ng-container>
+
+
+                <!-- Precio Column -->
+                <ng-container matColumnDef="precio">
+                  <mat-header-cell *matHeaderCellDef> Estandar </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Estandar:</span>
+                    {{element.precio | currency}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Costo Column (Costo del Cliente)-->
+                <ng-container matColumnDef="costo">
+                  <mat-header-cell *matHeaderCellDef> Costo </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Costo:</span>
+                    {{element.precioServicio | currency}}
+                  </mat-cell>
+                </ng-container>
+
+
+                <!-- Trabajador y Pago -->
+                <ng-container matColumnDef="trabajadorPago">
+                  <mat-header-cell *matHeaderCellDef> Trabajador y Tipo Pago </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Trabajador y Tipo Pago:</span>
+                    <mat-chip-list>
+                      <mat-chip color="accent" selected *ngFor="let chip of element.itemFuncionarios">
+                        <p><b>{{chip.funcionarioServicio.usuario.identificacion}}: </b> {{chip.funcionarioServicio.tipoPago.codigo == 1 ? ' F: $' + chip.funcionarioServicio.valorPago : ' P:' + chip.funcionarioServicio.valorPago + '%' }} </p>
+                      </mat-chip>
+                    </mat-chip-list>
+
+                  </mat-cell>
+                </ng-container>
+
+
+                <!-- Pago -->
+                <ng-container matColumnDef="pago">
+                  <mat-header-cell *matHeaderCellDef> Pago Trabajador </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Pago Trabajador:</span>
+
+                    <mat-chip-list>
+                      <mat-chip color="accent" selected *ngFor="let chip of element.itemFuncionarios">
+                        <p><b>{{chip.funcionarioServicio.tipoPago.codigo == 1 ? '$' + chip.funcionarioServicio.valorPago : '$' + (element.precio * chip.funcionarioServicio.valorPago ) / 100  }}</b> </p>
+                      </mat-chip>
+                    </mat-chip-list>
+
+                  </mat-cell>
+                </ng-container>
+
+
+
+
+
+
+
+
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+
+            <p><b>Total Servicio:</b> $ {{totalCostoServicio}}</p>
+            <p><b>Total Pagos Trabajadores:</b> $ {{totalPagoTrabajadores}}</p>
+
+          </mat-card-content>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button type="button" color="primary" mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+

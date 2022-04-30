@@ -1,0 +1,31 @@
+/*
+Template Name: Material Pro Admin
+Author: Luis Espinosa Llanos
+Email: lluisllanoss@gmail.com
+File: scss
+*/
+
+
+$custom-app-primary: mat-palette($mat-light-blue);
+$custom-app-accent: mat-palette($mat-yellow);
+$custom-app-warn: mat-palette($mat-pink);
+// Create the theme object (a Sass map containing all of the palettes).
+$custom-app-theme: mat-light-theme($custom-app-primary, $custom-app-accent, $custom-app-warn);
+$themecolor:#03A9F4;
+$themecolor-alt: #03A9F4;
+$white:#fff;
+#snav {
+    .mat-nav-list .mat-list-item {
+        .mat-list-item-content {
+            &:hover {
+                > a {
+                    color: $themecolor;
+                }
+            }
+        }
+        &.selected > .mat-list-item-content > a {
+            background: $themecolor-alt;
+            color: $white;
+        }
+    }
+}

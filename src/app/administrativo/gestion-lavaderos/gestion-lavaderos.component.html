@@ -1,0 +1,155 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de Lavaderos por el ADMINISTRADOR DEL SISTEMA -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Gestion de Empresas</mat-card-title>
+        <mat-card-subtitle>Administrador Gestione las empresas del sistema</mat-card-subtitle>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="lavaderoSelected" (click)="mostrarSeccionAdicionar()" >Adicionar</button>
+          <button mat-raised-button color="primary" [disabled]="!lavaderoSelected" (click)="mostrarSeccionModificar()" >Modificar</button>
+          <button mat-raised-button color="primary" [disabled]="!lavaderoSelected" (click)="eliminarObject()">Eliminar</button>
+        </div>
+
+        <br/>
+
+
+        <table datatable [dtOptions]="dtOptions" class="row-border hover" style="width: 100%">
+          <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Nit</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="lavaderos?.length != 0">
+          <tr *ngFor="let lavadero of lavaderos; let row = index" [class.selected]="rowSelected === 'selected'+row" (click)="ClickRow(row, 'selected'+row)">
+            <td>{{ lavadero.codigo }}</td>
+            <td>{{ lavadero.nombre }}</td>
+            <td>{{ lavadero.descripcion }}</td>
+            <td>{{ lavadero.nit }}</td>
+            <td>
+              <mat-slide-toggle [checked]="lavadero.estado === 0 ? false : true" (change)="changeState(lavadero.codigo, lavadero.estado, $event)">
+                {{lavadero.estado === 0 ? 'Inactivo' : 'Activo'}}
+              </mat-slide-toggle>
+            </td>
+          </tr>
+          </tbody>
+          <tbody *ngIf="lavaderos?.length == 0">
+          <tr>
+            <td colspan="3" class="no-data-available">No hay registros!</td>
+          </tr>
+          <tbody>
+        </table>
+
+
+
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-card *ngIf="accion == 'ADICIONAR' || accion == 'MODIFICAR'">
+      <mat-card-content>
+        <mat-card-title>Creacion y Edicion de empresas</mat-card-title>
+        <mat-card-subtitle>Administrador Agrege o Edite las empresas</mat-card-subtitle>
+
+        <mat-horizontal-stepper [linear]="isLinear">
+          <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup" class="basic-form">
+
+              <ng-template matStepLabel>Informacion Basica</ng-template>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="nombre" placeholder="Ingrese el nombre">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['nombre'].hasError('required') && firstFormGroup.controls['nombre'].touched" class="text-danger support-text"> (El nombre es requerido)</small>
+                  <small *ngIf="firstFormGroup.controls['nombre'].hasError('minlength') && firstFormGroup.controls['nombre'].touched" class="text-danger support-text"> (El nombre minimo de 3 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['nombre'].hasError('maxlength') && firstFormGroup.controls['nombre'].touched" class="text-danger support-text"> (El nombre maximo de 40 letras) </small>
+                </div>
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="descripcion" placeholder="Ingrese la descripcion">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['descripcion'].hasError('required') && firstFormGroup.controls['descripcion'].touched" class="text-danger support-text"> (La descripcion es requerido)</small>
+                  <small *ngIf="firstFormGroup.controls['descripcion'].hasError('minlength') && firstFormGroup.controls['descripcion'].touched" class="text-danger support-text"> (La descripcion minimo de 3 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['descripcion'].hasError('maxlength') && firstFormGroup.controls['descripcion'].touched" class="text-danger support-text"> (La descripcion maximo de 40 letras) </small>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="nit" placeholder="Ingrese el Nit">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['nit'].hasError('required') && firstFormGroup.controls['nit'].touched" class="text-danger support-text"> (El nit es requerido)</small>
+                  <small *ngIf="firstFormGroup.controls['nit'].hasError('minlength') && firstFormGroup.controls['nit'].touched" class="text-danger support-text"> (El nit minimo de 3 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['nit'].hasError('maxlength') && firstFormGroup.controls['nit'].touched" class="text-danger support-text"> (El nit maximo de 40 letras) </small>
+                </div>
+
+              </div>
+
+              <div>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid">Siguiente</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="seleccionoFile">
+            <form [formGroup]="secondFormGroup" class="basic-form">
+              <ng-template matStepLabel>Seleccion de Foto</ng-template>
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+
+                  <span style="color:#E91E63;" *ngIf="message">{{message}}</span>
+
+                  <div class="pro-img">
+                    <img [src]="objectImageToShow" alt="Imagen" *ngIf="!isImageLoading && imageLoadedComplete" width="180" />
+                  </div>
+
+                  <div class="btn btn-mdb-color btn-rounded float-left">
+                    <input type="file" (change)="onFileChanged($event)" style="display: none" #fileInput accept='image/*' />
+                    <button (click)="fileInput.click()" mat-raised-button color="primary">Seleccione la Foto</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div>
+                <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoFile">Siguiente</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Confirmacion</ng-template>
+            <h5>Por favor confirme.</h5>
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid || !seleccionoFile" (click)="adicionar()" *ngIf="accion == 'ADICIONAR'">Confirmar</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid || !seleccionoFile" (click)="editar()" *ngIf="accion == 'MODIFICAR'">Confirmar</button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+  </div>
+
+</div>
+

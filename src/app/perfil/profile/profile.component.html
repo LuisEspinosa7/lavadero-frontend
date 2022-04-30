@@ -1,0 +1,212 @@
+
+<!-- ============================================================== -->
+<!-- Perfil para cada usuario del sistema -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+
+    <mat-card *ngIf="informacionUsuarioCargada">
+      <mat-card-content>
+        <mat-card-title>Actualizacion de Informacion</mat-card-title>
+        <mat-card-subtitle>Puede actualizar la informacion de su perfil.</mat-card-subtitle>
+
+        <mat-horizontal-stepper [linear]="isLinear">
+          <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup" class="basic-form">
+
+              <ng-template matStepLabel>Informacion Basica</ng-template>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="nombre1" placeholder="Ingrese el primer nombre">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['nombre1'].hasError('required') && firstFormGroup.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre es requerido)</small>
+                  <small *ngIf="firstFormGroup.controls['nombre1'].hasError('minlength') && firstFormGroup.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre minimo de 3 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['nombre1'].hasError('maxlength') && firstFormGroup.controls['nombre1'].touched" class="text-danger support-text"> (El primer nombre maximo de 40 letras) </small>
+                </div>
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="nombre2" placeholder="Ingrese el segundo nombre">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['nombre2'].hasError('minlength') && firstFormGroup.controls['nombre2'].touched" class="text-danger support-text"> (El segundo nombre minimo de 3 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['nombre2'].hasError('maxlength') && firstFormGroup.controls['nombre2'].touched" class="text-danger support-text"> (El segundo nombre maximo de 40 letras) </small>
+                </div>
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="apellido1" placeholder="Ingrese el primer apellido">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['apellido1'].hasError('required') && firstFormGroup.controls['apellido1'].touched" class="text-danger support-text"> (El primer apellido es requeridos) </small>
+                  <small *ngIf="firstFormGroup.controls['apellido1'].hasError('minlength') && firstFormGroup.controls['apellido1'].touched" class="text-danger support-text"> (Los primer apellido minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['apellido1'].hasError('maxlength') && firstFormGroup.controls['apellido1'].touched" class="text-danger support-text"> (El primer apellido maximo de 40 letras) </small>
+                </div>
+
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="apellido2" placeholder="Ingrese el segundo apellido">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['apellido2'].hasError('required') && firstFormGroup.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido es requerido) </small>
+                  <small *ngIf="firstFormGroup.controls['apellido2'].hasError('minlength') && firstFormGroup.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['apellido2'].hasError('maxlength') && firstFormGroup.controls['apellido2'].touched" class="text-danger support-text"> (El segundo apellido maximo de 40 letras) </small>
+                </div>
+
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <mat-select formControlName="tipoIdentificacion" placeholder="Tipo Identificacion" [(value)]="selectedTipoIdentificacion">
+                      <mat-option *ngFor="let tipoIdentificacion of tiposIdentificacionJSON" [value]="tipoIdentificacion.codigo">
+                        {{tipoIdentificacion.nombre}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['tipoIdentificacion'].hasError('required') && firstFormGroup.controls['tipoIdentificacion'].touched" class="text-danger support-text">El tipo identificacion es requerido.</small>
+                </div>
+
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="identificacion" placeholder="Ingrese la identificacion">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['identificacion'].hasError('required') && firstFormGroup.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion es requerida) </small>
+                  <small *ngIf="firstFormGroup.controls['identificacion'].hasError('minlength') && firstFormGroup.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['identificacion'].hasError('maxlength') && firstFormGroup.controls['identificacion'].touched" class="text-danger support-text"> (La identificacion maximo de 40 letras) </small>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="direccion" placeholder="Ingrese la direccion">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['direccion'].hasError('required') && firstFormGroup.controls['direccion'].touched" class="text-danger support-text"> (La direccion es requerida) </small>
+                  <small *ngIf="firstFormGroup.controls['direccion'].hasError('minlength') && firstFormGroup.controls['direccion'].touched" class="text-danger support-text"> (La direccion minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['direccion'].hasError('maxlength') && firstFormGroup.controls['direccion'].touched" class="text-danger support-text"> (La direccion maximo de 40 letras) </small>
+                </div>
+
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="telefono" placeholder="Ingrese el telefono">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['telefono'].hasError('required') && firstFormGroup.controls['telefono'].touched" class="text-danger support-text"> (El telefono es requeridos) </small>
+                  <small *ngIf="firstFormGroup.controls['telefono'].hasError('minlength') && firstFormGroup.controls['telefono'].touched" class="text-danger support-text"> (Los telefono minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['telefono'].hasError('maxlength') && firstFormGroup.controls['telefono'].touched" class="text-danger support-text"> (El telefono maximo de 40 letras) </small>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+                  <mat-form-field>
+                    <input matInput formControlName="email" placeholder="Ingrese el email">
+                  </mat-form-field>
+                  <small *ngIf="firstFormGroup.controls['email'].hasError('required') && firstFormGroup.controls['email'].touched" class="text-danger support-text"> (El email es requeridos) </small>
+                  <small *ngIf="firstFormGroup.controls['email'].hasError('minlength') && firstFormGroup.controls['email'].touched" class="text-danger support-text"> (Los email minimo de 5 letras) </small>
+                  <small *ngIf="firstFormGroup.controls['email'].hasError('maxlength') && firstFormGroup.controls['email'].touched" class="text-danger support-text"> (El email maximo de 40 letras) </small>
+                </div>
+
+              </div>
+
+              <div>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid">Siguiente</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="seleccionoFile">
+            <form [formGroup]="secondFormGroup" class="basic-form">
+              <ng-template matStepLabel>Seleccion de Foto</ng-template>
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+
+                  <span style="color:#E91E63;" *ngIf="message">{{message}}</span>
+
+                  <div class="pro-img">
+                    <img [src]="objectImageToShow" alt="Imagen" *ngIf="!isImageLoading && imageLoadedComplete" width="180" />
+                  </div>
+
+                  <div class="btn btn-mdb-color btn-rounded float-left">
+                    <input type="file" (change)="onFileChanged($event)" style="display: none" #fileInput accept='image/*' />
+                    <button (click)="fileInput.click()" mat-raised-button color="primary">Seleccione la Foto</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div>
+                <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+                <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoFile">Siguiente</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Confirmacion</ng-template>
+            Por favor confirme.
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras</button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!firstFormGroup.valid || !seleccionoFile" (click)="editar()">Confirmar</button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+    <mat-card *ngIf="informacionUsuarioCargada">
+      <mat-card-content>
+        <mat-card-title>Cambio de Contraseña</mat-card-title>
+        <mat-card-subtitle>Puede cambiar la clave de ingreso.</mat-card-subtitle>
+
+        <form [formGroup]="passwordFormGroup" class="basic-form">
+
+          <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <input matInput type="password" formControlName="newPassword" placeholder="Nueva Contraseña">
+              </mat-form-field>
+              <small *ngIf="passwordFormGroup.controls['newPassword'].hasError('required') && passwordFormGroup.controls['newPassword'].touched" class="text-danger support-text"> (La clave es requerida) </small>
+              <small *ngIf="passwordFormGroup.controls['newPassword'].hasError('minlength') && passwordFormGroup.controls['newPassword'].touched" class="text-danger support-text"> (La clave minimo de 8 caracteres) </small>
+              <small *ngIf="passwordFormGroup.controls['newPassword'].hasError('maxlength') && passwordFormGroup.controls['newPassword'].touched" class="text-danger support-text"> (La clave maximo de 15 caracteres) </small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <input matInput type="password" formControlName="confirmPassword" placeholder="Confirmar Contraseña">
+              </mat-form-field>
+              <small *ngIf="passwordFormGroup.controls['confirmPassword'].hasError('required') && passwordFormGroup.controls['confirmPassword'].touched" class="text-danger support-text"> (La clave es requerida) </small>
+              <small *ngIf="passwordFormGroup.errors?.doesMatchPassword" class="text-danger support-text"> No coinciden las contraseñas. </small>
+            </div>
+
+          </div>
+
+        </form>
+
+        <div>
+          <button mat-raised-button color="warn" [disabled]="!passwordFormGroup.valid" (click)="confirmChangeOfPassword()">Confirmar</button>
+        </div>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+  </div>
+
+</div>
+

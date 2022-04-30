@@ -1,0 +1,532 @@
+<!-- ============================================================== -->
+<!-- Simple four boxes Row -->
+<!-- ============================================================== -->
+<div fxLayout="row wrap">
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="40" fxFlex.gt-md="40" fxFlex.gt-xs="40" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Clientes con mas servicios. </mat-card-title>
+
+        <p *ngIf="reporte1Informacion">Desde:({{fechaInicioReporte1 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte1 | date :'dd-MMM-yy' }})</p>
+
+        <form [formGroup]="reporte1FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte1FormGroup.controls['fechaInicio'].hasError('required') && reporte1FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker2" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte1FormGroup.controls['fechaFin'].hasError('required') && reporte1FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+            <!--<button mat-raised-button color="primary" [disabled]="!reporte1FormGroup.valid"(click)="cargarReporte1Informacion(2)" >Buscar</button>-->
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte1FormGroup.valid || descargando"
+                    (click)="cargarReporte1Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <div class="responsive-table" *ngIf="reporte1Informacion">
+          <mat-table #table [dataSource]="dataSource1">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Identificacion Column -->
+            <ng-container matColumnDef="identificacion">
+              <mat-header-cell *matHeaderCellDef> Identificacion </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Identificacion:</span>
+                {{element.usuario.identificacion}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Nombre Column -->
+            <ng-container matColumnDef="nombre">
+              <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Nombre:</span>
+                {{element.usuario.nombre1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Apellido Column -->
+            <ng-container matColumnDef="apellido">
+              <mat-header-cell *matHeaderCellDef> Apellido </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Apellido:</span>
+                {{element.usuario.apellido1}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Servicios Column -->
+            <ng-container matColumnDef="nServicios">
+              <mat-header-cell *matHeaderCellDef> N° Servicios </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">N° Servicios:</span>
+                {{element.numeroServiciosSolicitados}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns1"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns1;"></mat-row>
+
+          </mat-table>
+
+          <b><p *ngIf="reporte1Items.length === 0">No hay Registros</p></b>
+
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte1Informacion"></mat-progress-bar>
+
+        <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte1Informacion">(Total Servicios: {{reporte1Informacion.granTotal}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte1()" [disabled]="!reporte1FormGroup.valid || descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+
+
+
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="40" fxFlex.gt-md="40" fxFlex.gt-xs="40" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Trabajadores mas eficientes. </mat-card-title>
+
+        <p *ngIf="reporte2Informacion">Desde:({{fechaInicioReporte2 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte2 | date :'dd-MMM-yy' }})</p>
+
+        <form [formGroup]="reporte2FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker3" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+              <mat-datepicker #picker3></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte2FormGroup.controls['fechaInicio'].hasError('required') && reporte2FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker4" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+              <mat-datepicker #picker4></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte2FormGroup.controls['fechaFin'].hasError('required') && reporte2FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte2FormGroup.valid || descargando"
+                    (click)="cargarReporte2Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <div class="responsive-table" *ngIf="reporte2Informacion">
+          <mat-table #table [dataSource]="dataSource2">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Identificacion Column -->
+            <ng-container matColumnDef="identificacion">
+              <mat-header-cell *matHeaderCellDef> Identificacion </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Identificacion:</span>
+                {{element.usuario.identificacion}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Nombre Column -->
+            <ng-container matColumnDef="nombre">
+              <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Nombre:</span>
+                {{element.usuario.nombre1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Apellido Column -->
+            <ng-container matColumnDef="apellido">
+              <mat-header-cell *matHeaderCellDef> Apellido </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Apellido:</span>
+                {{element.usuario.apellido1}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Servicios Column -->
+            <ng-container matColumnDef="nServicios">
+              <mat-header-cell *matHeaderCellDef> N° Servicios </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">N° Servicios:</span>
+                {{element.numeroServiciosRealizados}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns2"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns2;"></mat-row>
+
+          </mat-table>
+
+          <b><p *ngIf="reporte2Items.length === 0">No hay Registros</p></b>
+
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte2Informacion"></mat-progress-bar>
+
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte2Informacion">(Total Servicios: {{reporte2Informacion.granTotal}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte2()" [disabled]="!reporte2FormGroup.valid || descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="40" fxFlex.gt-md="40" fxFlex.gt-xs="40" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Servicios mas solicitados. </mat-card-title>
+
+        <p *ngIf="reporte3Informacion">Desde:({{fechaInicioReporte3 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte3 | date :'dd-MMM-yy' }})</p>
+
+        <form [formGroup]="reporte3FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker5" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
+              <mat-datepicker #picker5></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte3FormGroup.controls['fechaInicio'].hasError('required') && reporte3FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker6" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker6"></mat-datepicker-toggle>
+              <mat-datepicker #picker6></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte3FormGroup.controls['fechaFin'].hasError('required') && reporte3FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte3FormGroup.valid || descargando"
+                    (click)="cargarReporte3Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <div class="responsive-table" *ngIf="reporte3Informacion">
+          <mat-table #table [dataSource]="dataSource3">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Identificacion Column -->
+            <ng-container matColumnDef="servicio">
+              <mat-header-cell *matHeaderCellDef> Servicio </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Servicio:</span>
+                {{element.servicio}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Servicios Column -->
+            <ng-container matColumnDef="nServicios">
+              <mat-header-cell *matHeaderCellDef> N° Servicios </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">N° Servicios:</span>
+                {{element.numeroRealizados}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns3"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns3;"></mat-row>
+
+          </mat-table>
+
+          <b><p *ngIf="reporte3Items.length === 0">No hay Registros</p></b>
+
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte3Informacion"></mat-progress-bar>
+
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte3Informacion">(Total Servicios: {{reporte3Informacion.granTotal}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte3()" [disabled]="!reporte3FormGroup.valid || descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+
+
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="60" fxFlex.gt-md="60" fxFlex.gt-xs="60" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Liquidaciones Trabajadores (Tecnicos). </mat-card-title>
+
+        <p *ngIf="reporte4Informacion">Desde:({{fechaInicioReporte4 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte4 | date :'dd-MMM-yy' }})</p>
+
+        <form [formGroup]="reporte4FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker7" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker7"></mat-datepicker-toggle>
+              <mat-datepicker #picker7></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte4FormGroup.controls['fechaInicio'].hasError('required') && reporte4FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker8" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker8"></mat-datepicker-toggle>
+              <mat-datepicker #picker8></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte4FormGroup.controls['fechaFin'].hasError('required') && reporte4FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte4FormGroup.valid || descargando"
+                    (click)="cargarReporte4Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <div class="responsive-table" *ngIf="reporte4Informacion">
+          <mat-table #table [dataSource]="dataSource4">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Nombre Column -->
+            <ng-container matColumnDef="nombre">
+              <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Nombre:</span>
+                {{element.funcionarioServicio.usuario.nombre1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Apellido Column -->
+            <ng-container matColumnDef="apellido">
+              <mat-header-cell *matHeaderCellDef> Apellido </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Apellido:</span>
+                {{element.funcionarioServicio.usuario.apellido1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Identificacion Column -->
+            <ng-container matColumnDef="identificacion">
+              <mat-header-cell *matHeaderCellDef> Identificacion </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Identificacion:</span>
+                {{element.funcionarioServicio.usuario.identificacion}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Fecha Column -->
+            <ng-container matColumnDef="fecha">
+              <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Fecha:</span>
+                {{element.fechaCreacion | date :'dd-MMM-yy'}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Inicio Column -->
+            <ng-container matColumnDef="inicio">
+              <mat-header-cell *matHeaderCellDef> Desde </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Desde:</span>
+                {{element.fechaInicio | date :'dd-MMM-yy'}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Fin Column -->
+            <ng-container matColumnDef="fin">
+              <mat-header-cell *matHeaderCellDef> Hasta </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Hasta:</span>
+                {{element.fechaFin | date :'dd-MMM-yy'}}
+              </mat-cell>
+            </ng-container>
+
+
+            <!-- Pago Column -->
+            <ng-container matColumnDef="pago">
+              <mat-header-cell *matHeaderCellDef> Pago </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Pago:</span>
+                {{element.valorPago | currency}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns4"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns4;"></mat-row>
+
+          </mat-table>
+
+          <b><p *ngIf="reporte4Items.length === 0">No hay Registros</p></b>
+
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte4Informacion"></mat-progress-bar>
+
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte4Informacion">(Total Servicios: {{reporte4Informacion.granTotal | currency}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte4()" [disabled]="!reporte4FormGroup.valid || descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+
+
+
+
+
+</div>

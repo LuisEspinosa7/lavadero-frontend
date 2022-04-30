@@ -1,0 +1,33 @@
+<div class="login-register" style="background-image:url(assets/images/background/login-register-2.jpg);">
+    <div class="login-register-box">
+        <mat-card>
+            <mat-card-content>
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <div class="text-center">
+                        <img alt="homepage" src="assets/images/logo-icon-2.png">
+                        <h4 class="m-t-0">Seleccione el Perfil</h4>
+                    </div>
+
+                    <div>
+                        <!-- col full-->
+
+                        <div>
+                            <mat-form-field>
+                              <mat-select formControlName="perfil" placeholder="Escoga el perfil" >
+                                <mat-option *ngFor="let perfil of rolesUserFixed" [value]="perfil.codigo">
+                                  {{perfil.nombre}}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                            <small *ngIf="form.controls['perfil'].hasError('required') && form.controls['perfil'].touched" class="text-danger support-text">El perfil es obligatorio.</small>
+                        </div>
+
+                        <div>
+                            <button mat-raised-button color="primary" class="btn-block btn-lg m-t-20 m-b-20" type="submit" [disabled]="!form.valid">Ingresar</button>
+                        </div>
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

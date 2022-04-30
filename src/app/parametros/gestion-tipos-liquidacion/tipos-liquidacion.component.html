@@ -1,0 +1,58 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de Tipos Liquidacion por el ADMINISTRADOR DEL SISTEMA -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Gestion de Tipos Liquidacion</mat-card-title>
+        <mat-card-subtitle>Administrador Gestione los tipos de liquidacion del sistema</mat-card-subtitle>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="tipoIdentificacionSelected" (click)="adicionar()" >Adicionar</button>
+          <button mat-raised-button color="primary" [disabled]="!tipoIdentificacionSelected" (click)="eliminarTipoLiquidacion()">Eliminar</button>
+        </div>
+
+        <br/>
+
+
+        <table datatable [dtOptions]="dtOptions" class="row-border hover" style="width: 100%">
+          <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="tiposLiquidacion?.length != 0">
+          <tr *ngFor="let tipoLiquidacion of tiposLiquidacion; let row = index" [class.selected]="rowSelected === 'selected'+row" (click)="ClickRow(row, 'selected'+row)">
+            <td>{{ tipoLiquidacion.codigo }}</td>
+            <td>{{ tipoLiquidacion.nombre }}</td>
+            <td>{{ tipoLiquidacion.descripcion }}</td>
+            <td>
+              <mat-slide-toggle [checked]="tipoLiquidacion.estado === 0 ? false : true" (change)="changeState(tipoLiquidacion.codigo, tipoLiquidacion.estado, $event)">
+                {{tipoLiquidacion.estado === 0 ? 'Inactivo' : 'Activo'}}
+              </mat-slide-toggle>
+            </td>
+          </tr>
+          </tbody>
+          <tbody *ngIf="tiposLiquidacion?.length == 0">
+          <tr>
+            <td colspan="3" class="no-data-available">No hay registros!</td>
+          </tr>
+          <tbody>
+        </table>
+
+
+
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>
+

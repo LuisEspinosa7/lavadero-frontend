@@ -1,0 +1,67 @@
+
+<form [formGroup]="form" (ngSubmit)="save()" class="basic-form" [ngClass]="{'custom': true}">
+  <h1 mat-dialog-title>{{title}}</h1>
+  <mat-dialog-content>
+
+    <div>
+      <mat-form-field class="example-full-width">
+        <input type="text" placeholder="Busqueda de lavadero por nombre" aria-label="Lavadero" matInput formControlName="lavadero" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" >
+          <mat-option *ngFor="let option of filteredOptions1 | async" [value]="option.nombre" (click)="cambioLavadero(option)">
+            {{option.nombre}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!--
+    <div>
+      <mat-form-field class="example-full-width">
+        <input type="text" placeholder="Busqueda de usuario por email" aria-label="Usuario" matInput formControlName="usuario" [matAutocomplete]="auto2">
+        <mat-autocomplete #auto2="matAutocomplete" >
+          <mat-option *ngFor="let option of filteredOptions2 | async" [value]="option.email" (click)="cambioUsuario(option)">
+            {{option.email}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    -->
+
+
+
+
+
+    <!--
+
+    <div>
+      <mat-form-field>
+        <mat-select formControlName="lavadero" placeholder="Lavadero" >
+          <mat-option *ngFor="let lavadero of lavaderosJSON" [value]="lavadero.codigo">
+            {{lavadero.nombre}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <small *ngIf="form.controls['lavadero'].hasError('required') && form.controls['lavadero'].touched" class="text-danger support-text">El lavadero es requerido.</small>
+    </div>
+
+
+
+    <div>
+      <mat-form-field>
+        <mat-select formControlName="tipoIdentificacion" placeholder="Tipo Identificacion" [(value)]="selectedTipoIdentificacion">
+          <mat-option *ngFor="let tipoIdentificacion of tiposIdentificacionJSON" [value]="tipoIdentificacion.codigo">
+            {{tipoIdentificacion.nombre}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <small *ngIf="form.controls['tipoIdentificacion'].hasError('required') && form.controls['tipoIdentificacion'].touched" class="text-danger support-text">El tipo identificacion es requerido.</small>
+    </div>
+    -->
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!seleccionoLavadero">{{accion}}</button>
+    <button mat-raised-button type="button" mat-dialog-close>Cancelar</button>
+  </mat-dialog-actions>
+</form>

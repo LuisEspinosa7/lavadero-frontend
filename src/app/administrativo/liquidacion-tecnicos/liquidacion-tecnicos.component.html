@@ -1,0 +1,344 @@
+
+<!-- ============================================================== -->
+<!-- Liquidacion de Funcionarios por los OPERARIOS -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Liquidacion Personal Tecnico</mat-card-title>
+        <mat-card-subtitle>Operario, aqui puede buscar y liquidar a los tecnicos.</mat-card-subtitle>
+
+        <mat-card class="bg-info text-white text-center" *ngIf="lavaderoUsuario">
+          <div class="p-10">
+            <h2 class="m-0">{{lavaderoUsuario.nombre}}</h2>
+            <small>(Empresa)</small>
+          </div>
+        </mat-card>
+
+        <!-- Filtros -->
+
+        <form [formGroup]="busquedaFormGroup" class="basic-form">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingFiltros"></mat-progress-bar>
+
+
+          <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="!loadingFiltros || tiposLiquidacionJSON.length == 0 || tiposServicioJSON.length == 0">
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <mat-select formControlName="tipoLiquidacion" placeholder="Tipo Liquidacion" (selectionChange)="cambioTipoLiquidacion($event.value)" >
+                  <mat-option *ngFor="let tipoLiquidacion of tiposLiquidacionJSON" [value]="tipoLiquidacion.codigo" >
+                    {{tipoLiquidacion.nombre}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['tipoLiquidacion'].hasError('required') && busquedaFormGroup.controls['tipoLiquidacion'].touched" class="text-danger support-text"> (Tipo liquidacion es requerida)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <mat-select formControlName="tipoServicio" placeholder="Tipo Servicio" (selectionChange)="cambioTipoServicio($event.value)" >
+                  <mat-option *ngFor="let tipoServicio of tiposServicioJSON" [value]="tipoServicio.codigo" >
+                    {{tipoServicio.nombre}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['tipoServicio'].hasError('required') && busquedaFormGroup.controls['tipoServicio'].touched" class="text-danger support-text"> (Tipo servicio es requerido)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <input matInput #ref1 [matDatepicker]="picker" placeholder="Fecha Inicio" formControlName="fechaInicio" (dateChange)="cambioFechaInicio(ref1.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['fechaInicio'].hasError('required') && busquedaFormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <input matInput #ref2 [matDatepicker]="picker2" placeholder="Fecha Fin" formControlName="fechaFin" (dateChange)="cambioFechaFin(ref2.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['fechaFin'].hasError('required') && busquedaFormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+            </div>
+
+          </div>
+
+
+        </form>
+
+        <!-- Filtros -->
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="loadingLiquidacionesFuncionarios || !busquedaFormGroup.valid"(click)="buscarLiquidaciones()" >Buscar <mat-icon>find_in_page</mat-icon></button>
+        </div>
+
+        <br/>
+
+
+        <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingLiquidacionesFuncionarios"></mat-progress-bar>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="100" fxFlex="100" *ngIf="liquidacionesFuncionarios.length > 0">
+
+            <mat-card>
+
+              <mat-card-content>
+                <mat-card-title>Liquidaciones Disponibles</mat-card-title>
+                <mat-card-subtitle>Operario, porfavor revise el historial en la parte inferior.</mat-card-subtitle>
+
+                <div class="responsive-table" *ngIf="liquidacionesFuncionarios.length > 0">
+                  <mat-table #table [dataSource]="dataSource">
+
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="index">
+                      <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                      <mat-cell *matCellDef="let element; let i = index;">
+                        <span class="header-label">N°:</span>
+                        {{i + 1}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Trabajador Column -->
+                    <ng-container matColumnDef="trabajador">
+                      <mat-header-cell *matHeaderCellDef> Trabajador </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Trabajador:</span>
+                        {{element.funcionarioServicio.usuario.nombre1}} {{element.funcionarioServicio.usuario.apellido1}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Identificacion Column -->
+                    <ng-container matColumnDef="identificacion">
+                      <mat-header-cell *matHeaderCellDef> Identificacion </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Identificacion:</span>
+                        {{element.funcionarioServicio.usuario.identificacion}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Valor Servicio Column -->
+                    <ng-container matColumnDef="valorservicio">
+                      <mat-header-cell *matHeaderCellDef> Costo. Servicio </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Costo. Servicio:</span>
+                        {{element.valorServicio | currency }}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- N° Servicios Prestados Column -->
+                    <ng-container matColumnDef="nprestados">
+                      <mat-header-cell *matHeaderCellDef> Cantidad </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Cantidad:</span>
+                        {{element.numeroServicios}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Tipo Pago Column -->
+                    <ng-container matColumnDef="tipopago">
+                      <mat-header-cell *matHeaderCellDef> Tipo Pago </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Tipo Pago:</span>
+
+                        {{element.funcionarioServicio.tipoPago.nombre}}:
+                        {{element.funcionarioServicio.tipoPago.codigo == 1 ? '$' : ''}}
+                        {{element.funcionarioServicio.valorPago}}
+                        {{element.funcionarioServicio.tipoPago.codigo == 2 ? '%' : ''}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Pago Column -->
+                    <ng-container matColumnDef="pago">
+                      <mat-header-cell *matHeaderCellDef> Pago </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Pago:</span>
+                        {{element.valorPago | currency}}
+                      </mat-cell>
+                    </ng-container>
+
+
+                    <!-- Opciones Column -->
+                    <ng-container matColumnDef="opciones">
+                      <mat-header-cell *matHeaderCellDef> Opciones </mat-header-cell>
+                      <mat-cell *matCellDef="let element; let i = index">
+                        <span class="header-label">Opciones:</span>
+                        <button mat-raised-button matTooltip="Imprimir Ticket" color="primary" (click)="confirmarImprimirTicket(i)" [disabled]="imprimiendoTicket"><mat-icon>move_to_inbox</mat-icon></button>
+                        <button mat-raised-button matTooltip="Realizar Liquidacion" color="primary" (click)="confirmarLiquidarFuncionario(i)"><mat-icon>thumb_up</mat-icon></button>
+                      </mat-cell>
+                    </ng-container>
+
+
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                  </mat-table>
+                </div>
+
+              </mat-card-content>
+
+            </mat-card>
+
+          </div>
+
+        </div>
+
+
+
+        <mat-card class="bg-warning text-white text-center" *ngIf="liquidacionesFuncionarios.length == 0 && buscadoPreviamente">
+          <div class="p-10">
+            <h2 class="m-0">Señor Operario, no existen liquidaciones.</h2>
+            <small>(Seleccione otra configuracion de filtros)</small>
+          </div>
+        </mat-card>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <!------------------------------------------------------------------------------------------------------------>
+
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Historial de Liquidaciones</mat-card-title>
+        <mat-card-subtitle>Operario, aqui puede ver las lisquidaciones que se han realizado segun los filtros.</mat-card-subtitle>
+
+        <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingLiquidacionesFuncionariosHistorial"></mat-progress-bar>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="100" fxFlex="100" *ngIf="liquidacionesFuncionariosHistorial.length > 0">
+
+
+                <div class="responsive-table" *ngIf="liquidacionesFuncionariosHistorial.length > 0">
+                  <mat-table #table [dataSource]="dataSource2">
+
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="index">
+                      <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                      <mat-cell *matCellDef="let element; let i = index;">
+                        <span class="header-label">N°:</span>
+                        {{i + 1}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Trabajador Column -->
+                    <ng-container matColumnDef="trabajador">
+                      <mat-header-cell *matHeaderCellDef> Trabajador </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Trabajador:</span>
+                        {{element.funcionarioServicio.usuario.nombre1}} {{element.funcionarioServicio.usuario.apellido1}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Identificacion Column -->
+                    <ng-container matColumnDef="identificacion">
+                      <mat-header-cell *matHeaderCellDef> Identificacion </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Identificacion:</span>
+                        {{element.funcionarioServicio.usuario.identificacion}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Valor Servicio Column -->
+                    <ng-container matColumnDef="valorservicio">
+                      <mat-header-cell *matHeaderCellDef> Costo. Servicio </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Costo. Servicio:</span>
+                        {{element.valorServicio | currency }}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- N° Servicios Prestados Column -->
+                    <ng-container matColumnDef="nprestados">
+                      <mat-header-cell *matHeaderCellDef> Cantidad </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Cantidad:</span>
+                        {{element.numeroServicios}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Tipo Pago Column -->
+                    <ng-container matColumnDef="tipopago">
+                      <mat-header-cell *matHeaderCellDef> Tipo Pago </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Tipo Pago:</span>
+
+                        {{element.funcionarioServicio.tipoPago.nombre}}:
+                        {{element.funcionarioServicio.tipoPago.codigo == 1 ? '$' : ''}}
+                        {{element.funcionarioServicio.valorPago}}
+                        {{element.funcionarioServicio.tipoPago.codigo == 2 ? '%' : ''}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Pago Column -->
+                    <ng-container matColumnDef="pago">
+                      <mat-header-cell *matHeaderCellDef> Pago </mat-header-cell>
+                      <mat-cell *matCellDef="let element">
+                        <span class="header-label">Pago:</span>
+                        {{element.valorPago | currency}}
+                      </mat-cell>
+                    </ng-container>
+
+
+                    <!-- Opciones Column -->
+                    <ng-container matColumnDef="opciones">
+                      <mat-header-cell *matHeaderCellDef> Opciones </mat-header-cell>
+                      <mat-cell *matCellDef="let element; let i = index">
+                        <span class="header-label">Opciones:</span>
+                        <button mat-raised-button matTooltip="Imprimir Ticket" color="primary" (click)="confirmarImprimirTicketDeHistorial(i)" [disabled]="imprimiendoTicket"><mat-icon>move_to_inbox</mat-icon></button>
+                      </mat-cell>
+                    </ng-container>
+
+
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns2"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns2;"></mat-row>
+                  </mat-table>
+                </div>
+
+              <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5]">
+              </mat-paginator>
+
+
+
+          </div>
+
+        </div>
+
+
+
+        <mat-card class="bg-warning text-white text-center" *ngIf="liquidacionesFuncionariosHistorial.length == 0 && buscadoPreviamente">
+          <div class="p-10">
+            <h2 class="m-0">Señor Operario, no existe el historial de liquidaciones.</h2>
+            <small>(Seleccione otra configuracion de filtros)</small>
+          </div>
+        </mat-card>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+
+
+
+
+  </div>
+
+</div>
+

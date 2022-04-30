@@ -1,0 +1,23 @@
+
+<form [formGroup]="form" (ngSubmit)="save()" class="basic-form" [ngClass]="{'custom': true}">
+  <h1 mat-dialog-title>{{title}}</h1>
+  <mat-dialog-content>
+
+    <div>
+      <mat-form-field class="example-full-width">
+        <input type="text" placeholder="Busqueda de tecnicos por email" aria-label="Tecnico" matInput formControlName="usuario" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" >
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option.identificacion" (click)="cambioUsuario(option)">
+            {{option.identificacion}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!seleccionoUsuario">{{accion}}</button>
+    <button mat-raised-button type="button" mat-dialog-close>Cancelar</button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,254 @@
+
+<!-- ============================================================== -->
+<!-- Gestion de Ordenes por los OPERARIOS -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Historial Ordenes de Servicio</mat-card-title>
+        <mat-card-subtitle>Operario, este es el historial de las ordenes de servicio.</mat-card-subtitle>
+
+        <mat-card class="bg-info text-white text-center" *ngIf="lavaderoUsuario">
+          <div class="p-10">
+            <h2 class="m-0">{{lavaderoUsuario.nombre}}</h2>
+            <small>Ordenes de Servicio</small>
+          </div>
+        </mat-card>
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="ordenSelected"(click)="mostrarSeccionAdicionar()" >Adicionar <mat-icon>add_box</mat-icon></button>
+          <button mat-raised-button color="primary" [disabled]="!ordenSelected" (click)="visualizar()">Visualizar <mat-icon>remove_red_eye</mat-icon></button>
+          <button mat-raised-button color="warn" [disabled]="!ordenSelected || imprimiendoFactura" (click)="imprimirFactura()">Imprimir Factura <mat-icon>picture_as_pdf</mat-icon></button>
+        </div>
+
+        <br/>
+
+        <mat-card class="bg-warning text-white text-center" *ngIf="ordenes.length == 0">
+          <div class="p-10">
+            <h2 class="m-0">Señor Operario, no existen ordenes previas.</h2>
+            <small>(Puede crearlas dando clic en el boton Adicionar)</small>
+          </div>
+        </mat-card>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingOrdenes"></mat-progress-bar>
+
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover" id="tabla1">
+
+          <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Usuario</th>
+            <th>Vehiculo</th>
+            <th>Fecha</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="ordenes?.length != 0">
+          <tr *ngFor="let orden of ordenes; let row = index" [class.selected]="rowSelected === 'selected'+row" (click)="ClickRow(row, 'selected'+row)">
+            <td>{{ orden.codigo }}</td>
+            <td>{{ orden.clienteVehiculo.usuario.identificacion }}</td>
+            <td>{{ orden.clienteVehiculo.placa }}</td>
+            <td>{{ orden.fechaCreacion | date :'dd-MMM-yy h:mm:ss a ' }}</td>
+          </tr>
+          </tbody>
+          <tbody *ngIf="ordenes?.length == 0">
+          <tr>
+            <td colspan="3" class="no-data-available">No hay registros!</td>
+          </tr>
+          <tbody>
+        </table>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+    <mat-card *ngIf="accion == 'ADICIONAR'">
+      <mat-card-content>
+        <mat-card-title>Creacion de Orden de Servicio</mat-card-title>
+        <mat-card-subtitle>Operario, puede crear un orden de servicio.</mat-card-subtitle>
+
+        <mat-horizontal-stepper [linear]="isLinear">
+          <mat-step [stepControl]="seleccionoVehiculoActual">
+
+            <ng-template matStepLabel>Busqueda Vehiculo</ng-template>
+
+
+            <h4>¿Quien viene el dia de hoy?</h4>
+
+
+            <form [formGroup]="busquedaFormGroup" class="basic-form">
+
+
+              <mat-progress-bar mode="indeterminate" *ngIf="loadingVehiculo"></mat-progress-bar>
+
+
+              <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="!loadingVehiculo">
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                  <mat-form-field>
+                    <input matInput formControlName="plac" placeholder="Ingrese la Placa">
+                  </mat-form-field>
+                  <small *ngIf="busquedaFormGroup.controls['plac'].hasError('required') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa es requerida)</small>
+                  <small *ngIf="busquedaFormGroup.controls['plac'].hasError('minlength') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa minimo de 5 letras) </small>
+                  <small *ngIf="busquedaFormGroup.controls['plac'].hasError('maxlength') && busquedaFormGroup.controls['plac'].touched" class="text-danger support-text"> (La placa maximo de 10 letras) </small>
+                </div>
+
+                <!-- column -->
+                <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10">
+                  <button mat-raised-button color="primary" [disabled]="!busquedaFormGroup.valid" (click)="buscarVehiculo()">Buscar <mat-icon>find_in_page</mat-icon></button>
+                </div>
+
+              </div>
+
+              <mat-card *ngIf="vehiculoEncontrado">
+
+                <mat-card-content>
+                  <mat-card-title>Datos Basicos:</mat-card-title>
+
+                  <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="vehiculoEncontrado">
+                    <!-- column -->
+                    <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                      <h5><b>Propietario:</b> {{vehiculoEncontradoObj.usuario.nombre1}} {{vehiculoEncontradoObj.usuario.apellido1}}</h5>
+                    </div>
+                    <!-- column -->
+                    <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                      <h5><b>Tipo Vehiculo:</b> {{vehiculoEncontradoObj.tipoVehiculo.nombre}}</h5>
+                    </div>
+                    <!-- column -->
+                    <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                      <h5><b>Marca:</b> {{vehiculoEncontradoObj.marca.nombre}}</h5>
+                    </div>
+                  </div>
+
+                </mat-card-content>
+
+              </mat-card>
+
+            </form>
+
+
+            <div>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoVehiculoActual">Siguiente <mat-icon>redo</mat-icon></button>
+            </div>
+
+          </mat-step>
+
+
+          <mat-step [stepControl]="itemsTemporales.length > 0">
+
+            <ng-template matStepLabel>Servicios</ng-template>
+
+            <h4>¿Que servicios se aplicaran al vehiculo?.</h4>
+            <h6>Agregalos con el boton Agregar</h6>
+
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <button mat-raised-button color="primary" (click)="agregarServicioDialog()">Agregar Servicio <mat-icon>library_add</mat-icon></button>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="itemsTemporales.length > 0">
+
+                <mat-card-content>
+
+                  <div class="responsive-table" *ngIf="itemsTemporales.length > 0">
+                    <mat-table #table [dataSource]="dataSource">
+
+                      <!-- Position Column -->
+                      <ng-container matColumnDef="index">
+                        <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                        <mat-cell *matCellDef="let element; let i = index;">
+                          <span class="header-label">N°:</span>
+                          {{i + 1}}
+                        </mat-cell>
+                      </ng-container>
+
+                      <!-- Servicio Column -->
+                      <ng-container matColumnDef="servicio">
+                        <mat-header-cell *matHeaderCellDef> Servicio </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                          <span class="header-label">Servicio:</span>
+                          {{element.tipoServicio.nombre}}
+                        </mat-cell>
+                      </ng-container>
+
+                      <!-- Precio Column -->
+                      <ng-container matColumnDef="precio">
+                        <mat-header-cell *matHeaderCellDef> Precio </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                          <span class="header-label">Precio:</span>
+                          {{element.precio | currency}}
+                        </mat-cell>
+                      </ng-container>
+
+                      <!-- Tecnico Column -->
+                      <ng-container matColumnDef="tecnicos">
+                        <mat-header-cell *matHeaderCellDef> Apellido Tecnicos </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                          <span class="header-label">Apellido Tecnicos:</span>
+                          <mat-chip-list>
+                            <mat-chip color="accent" selected *ngFor="let chip of element.itemFuncionarios">
+                              {{chip.funcionarioServicio.usuario.apellido1}}
+                            </mat-chip>
+                          </mat-chip-list>
+                        </mat-cell>
+                      </ng-container>
+
+                      <!-- Eliminar Column -->
+                      <ng-container matColumnDef="eliminar">
+                        <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
+                        <mat-cell *matCellDef="let element; let i = index">
+                          <span class="header-label">Eliminar:</span>
+                          <button mat-raised-button color="primary" (click)="quitarServicioTabla(i)"><mat-icon>clear</mat-icon></button>
+                        </mat-cell>
+                      </ng-container>
+
+
+
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+                  </div>
+
+                </mat-card-content>
+
+              </div>
+
+            </div>
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="itemsTemporales.length == 0">Siguiente <mat-icon>redo</mat-icon></button>
+            </div>
+
+          </mat-step>
+
+
+          <mat-step>
+            <ng-template matStepLabel>Confirmar</ng-template>
+            <h4>¡Solo falta confirmar!</h4>
+            <h5>De clic en confirmar para realizar el servicio.</h5>
+
+            <div>
+              <button mat-raised-button color="accent" matStepperPrevious>Atras <mat-icon>undo</mat-icon></button>
+              <button mat-raised-button color="warn" matStepperNext [disabled]="!seleccionoVehiculoActual || itemsTemporales.length == 0" (click)="confirmarAdicionar()" *ngIf="accion == 'ADICIONAR'">Confirmar <mat-icon>assignment_turned_in</mat-icon></button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+  </div>
+
+</div>
+

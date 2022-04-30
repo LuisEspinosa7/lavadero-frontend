@@ -1,0 +1,270 @@
+
+<!-- ============================================================== -->
+<!-- Liquidacion de Comision por el ADMINISTRADOR -->
+<!-- ============================================================== -->
+<div fxLayout="row" fxLayoutWrap="wrap">
+  <!-- Column-->
+  <div fxFlex.gt-lg="100" fxFlex.gt-md="100" fxFlex.gt-xs="100" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Liquidacion Comisiones</mat-card-title>
+        <mat-card-subtitle>Administrador, aqui puede liquidar las comision de los servicios de cada empresa.</mat-card-subtitle>
+
+        <!-- Filtros -->
+
+        <form [formGroup]="busquedaFormGroup" class="basic-form">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingFiltros"> </mat-progress-bar>
+
+
+          <div fxLayout="row wrap" fxFlexAlign="center" class="row" >
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+
+              <mat-form-field class="example-full-width">
+                <input type="text" placeholder="Buscar Empresa" aria-label="Empresa" matInput formControlName="lavadero" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" >
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.nombre" (click)="cambioLavadero(option)">
+                    {{option.nombre}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['lavadero'].hasError('required') && busquedaFormGroup.controls['lavadero'].touched" class="text-danger support-text"> (La empresa es requerida)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container">
+              <mat-form-field>
+                <mat-select formControlName="tipoServicio" placeholder="Tipo Servicio" (selectionChange)="cambioTipoServicio($event.value)" >
+                  <mat-option *ngFor="let tipoServicio of tiposServicioJSON" [value]="tipoServicio.codigo" >
+                    {{tipoServicio.nombre}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['tipoServicio'].hasError('required') && busquedaFormGroup.controls['tipoServicio'].touched" class="text-danger support-text"> (Tipo servicio es requerido)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container" *ngIf="seleccionoLavadero && tipoServicioActual && lavaderoServicioConfiguracionActual">
+              <mat-form-field >
+                <input matInput #ref1 [matDatepicker]="picker" placeholder="Fecha Inicio" formControlName="fechaInicio" (dateChange)="cambioFechaInicio(ref1.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['fechaInicio'].hasError('required') && busquedaFormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+            </div>
+
+            <!-- column -->
+            <div fxFlex.gt-sm="33.33" fxFlex="100" class="p-10 errors-container" *ngIf="seleccionoLavadero && tipoServicioActual && lavaderoServicioConfiguracionActual">
+              <mat-form-field>
+                <input matInput #ref2 [matDatepicker]="picker2" placeholder="Fecha Fin" formControlName="fechaFin" (dateChange)="cambioFechaFin(ref2.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+              </mat-form-field>
+              <small *ngIf="busquedaFormGroup.controls['fechaFin'].hasError('required') && busquedaFormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+            </div>
+
+          </div>
+
+
+        </form>
+
+        <!-- Filtros -->
+
+        <div class="example-button-row">
+          <button mat-raised-button color="primary" [disabled]="!busquedaFormGroup.valid || !lavaderoServicioConfiguracionActual" (click)="calcularComision()">Calcular</button>
+        </div>
+
+        <br/>
+
+        <mat-card *ngIf="liquidacionComisionActual">
+
+          <mat-card-content>
+            <mat-card-title>Calculo de Comision:</mat-card-title>
+
+            <div fxLayout="row wrap" fxFlexAlign="center" class="row" *ngIf="liquidacionComisionActual">
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Empresa:</b> {{liquidacionComisionActual.lavaderoServicio.lavadero.nombre}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Tipo Servicio:</b> {{liquidacionComisionActual.lavaderoServicio.tipoServicio.nombre}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Precio Servicio:</b> {{liquidacionComisionActual.lavaderoServicio.precioEstandar | currency}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Comision Por Servicio:</b> {{liquidacionComisionActual.lavaderoServicio.valorComision}} %</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Numero de Servicios Prestados:</b> {{liquidacionComisionActual.numeroServicios}}</h5>
+              </div>
+
+              <!-- column -->
+              <div fxFlex.gt-sm="30" fxFlex="100" class="p-10">
+                <h5><b>Comision Ganada:</b> {{liquidacionComisionActual.valorLiquidacion | currency}}</h5>
+              </div>
+
+
+            </div>
+
+            <div class="example-button-row" *ngIf="liquidacionComisionActual">
+              <button mat-raised-button color="warn" (click)="confirmarLiquidarComision()">Liquidar</button>
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+    <!------------------------------------------------------------------------------------------------------------>
+
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Historial de Liquidaciones segun Empresa y Tipo Servicio</mat-card-title>
+        <mat-card-subtitle>Administrador, aqui puede ver las liquidaciones que se han realizado segun la empresa y el tipo servicio.</mat-card-subtitle>
+
+        <div fxLayout="row wrap" fxFlexAlign="center" class="row">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loadingLiquidacionesComisionesHistorial"></mat-progress-bar>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="100" fxFlex="100" *ngIf="liquidacionesComisionesHistorial.length > 0">
+
+
+            <div class="responsive-table" *ngIf="liquidacionesComisionesHistorial.length > 0">
+              <mat-table #table [dataSource]="dataSource">
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="index">
+                  <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+                  <mat-cell *matCellDef="let element; let i = index;">
+                    <span class="header-label">N°:</span>
+                    {{i + 1}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Empresa Column -->
+                <ng-container matColumnDef="empresa">
+                  <mat-header-cell *matHeaderCellDef> Empresa </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Empresa:</span>
+                    {{element.lavaderoServicio.lavadero.nombre}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Identificacion Column -->
+                <ng-container matColumnDef="servicio">
+                  <mat-header-cell *matHeaderCellDef> Servicio </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Servicio:</span>
+                    {{element.lavaderoServicio.tipoServicio.nombre}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Valor Servicio Column -->
+                <ng-container matColumnDef="precioservicio">
+                  <mat-header-cell *matHeaderCellDef> Costo. Servicio </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Costo. Servicio:</span>
+                    {{element.lavaderoServicio.precioEstandar | currency }}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Valor Servicio Column -->
+                <ng-container matColumnDef="fechainicio">
+                  <mat-header-cell *matHeaderCellDef> Fecha Inicio </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Fecha Inicio:</span>
+                    {{element.fechaInicio | date :'dd-MMM-yy h:mm:ss a ' }}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Valor Servicio Column -->
+                <ng-container matColumnDef="fechafin">
+                  <mat-header-cell *matHeaderCellDef> Fecha Fin </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Fecha Fin:</span>
+                    {{element.fechaFin | date :'dd-MMM-yy h:mm:ss a ' }}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- N° Servicios Prestados Column -->
+                <ng-container matColumnDef="nprestados">
+                  <mat-header-cell *matHeaderCellDef> Cantidad </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Cantidad:</span>
+                    {{element.numeroServicios}}
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Tipo Pago Column -->
+                <ng-container matColumnDef="porcentaje">
+                  <mat-header-cell *matHeaderCellDef> Porcentaje </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Porcentaje:</span>
+                    {{element.lavaderoServicio.valorComision}}%
+                  </mat-cell>
+                </ng-container>
+
+                <!-- Pago Column -->
+                <ng-container matColumnDef="comision">
+                  <mat-header-cell *matHeaderCellDef> Comision </mat-header-cell>
+                  <mat-cell *matCellDef="let element">
+                    <span class="header-label">Comision:</span>
+                    {{element.valorLiquidacion | currency}}
+                  </mat-cell>
+                </ng-container>
+
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+
+            <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5]">
+            </mat-paginator>
+
+          </div>
+
+        </div>
+
+
+        <mat-card class="bg-warning text-white text-center" *ngIf="liquidacionesComisionesHistorial.length == 0 && buscadoPreviamente">
+          <div class="p-10">
+            <h2 class="m-0">Señor Administrador, no existe el historial de liquidaciones.</h2>
+            <small>(Para la empresa y el tipo servicio seleccionado)</small>
+          </div>
+        </mat-card>
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+</div>
+

@@ -1,0 +1,49 @@
+<div class="login-register" style="background-image:url(assets/images/background/login-register-3.png);">
+    <div class="login-register-box">
+        <mat-card>
+            <mat-card-content>
+
+                <form [formGroup]="form" (ngSubmit)="onSubmit()" >
+                    <div class="text-center">
+                        <img alt="homepage" src="assets/images/logo-icon-3.png">
+                        <h4 class="m-t-0">Login</h4>
+                    </div>
+
+                    <h4 *ngIf="error">{{error}}</h4>
+
+
+                    <div >
+
+                        <!-- col full-->
+                        <div>
+                            <mat-form-field>
+                                <input matInput placeholder="Correo Electronico" [formControl]="form.controls['email']">
+                            </mat-form-field>
+                            <small *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched" class="text-danger support-text">El correo es obligatorio.</small>
+                        </div>
+                        <!-- col full-->
+                        <div>
+                            <mat-form-field>
+                                <input matInput type="password" placeholder="Contraseña" [formControl]="form.controls['password']">
+                            </mat-form-field>
+                            <small *ngIf="form.controls['password'].hasError('required') && form.controls['password'].touched" class="text-danger support-text">La contraseña es obligatoria.</small>
+                        </div>
+
+                        <!-- col full-->
+                        <div>
+                          <mat-progress-bar mode="indeterminate" *ngIf="logging"></mat-progress-bar>
+                        </div>
+
+                        <!-- col full-->
+                        <div>
+                            <button mat-raised-button color="primary" class="btn-block btn-lg m-t-20 m-b-20" type="submit" [disabled]="!form.valid" *ngIf="!logging">Ingresar</button>
+                        </div>
+
+
+
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

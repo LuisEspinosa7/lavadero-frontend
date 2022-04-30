@@ -1,0 +1,258 @@
+<!-- ============================================================== -->
+<!-- Simple four boxes Row -->
+<!-- ============================================================== -->
+<div fxLayout="row wrap">
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="50" fxFlex.gt-md="50" fxFlex.gt-xs="50" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Facturación y Comisión al dia. </mat-card-title>
+
+        <p *ngIf="reporte2Informacion">Desde:({{fechaInicioReporte2 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte2 | date :'dd-MMM-yy' }})</p>
+
+        <form [formGroup]="reporte2FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte2FormGroup.controls['fechaInicio'].hasError('required') && reporte2FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker2" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte2FormGroup.controls['fechaFin'].hasError('required') && reporte2FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+            <!--<button mat-raised-button color="primary" [disabled]="!reporte1FormGroup.valid"(click)="cargarReporte1Informacion(2)" >Buscar</button>-->
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte2FormGroup.valid || descargando"
+                    (click)="cargarReporte2Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+
+
+        <div class="responsive-table" *ngIf="reporte2Informacion">
+          <mat-table #table [dataSource]="dataSource2">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Index Column -->
+            <ng-container matColumnDef="empresa">
+              <mat-header-cell *matHeaderCellDef> Empresa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Empresa:</span>
+                {{element.lavadero}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Facturado Column -->
+            <ng-container matColumnDef="facturado">
+              <mat-header-cell *matHeaderCellDef> Facturado </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Facturado:</span>
+                {{element.facturacion | currency}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Comision Column -->
+            <ng-container matColumnDef="comision">
+              <mat-header-cell *matHeaderCellDef> Comision </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Comision:</span>
+                {{element.comision | currency}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns2"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns2;"></mat-row>
+          </mat-table>
+
+          <b><p *ngIf="reporte2Items.length === 0">No hay Registros</p></b>
+
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte2Informacion"></mat-progress-bar>
+
+        <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte2Informacion">(Gran Total Facturado: {{reporte2Informacion.granTotalFacturacion  | currency}})</p>
+        <p *ngIf="reporte2Informacion">(Gran Total Comision: {{reporte2Informacion.granTotalComisiones  | currency}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte2()" [disabled]="!reporte2FormGroup.valid || descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+  <!-- Column-->
+  <div fxFlex.gt-lg="40" fxFlex.gt-md="40" fxFlex.gt-xs="40" fxFlex="100">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Servicios por empresa al dia. </mat-card-title>
+
+        <p *ngIf="reporte4Informacion">Desde:({{fechaInicioReporte4 | date :'dd-MMM-yy' }}) - Hasta:({{fechaFinReporte4 | date :'dd-MMM-yy' }})</p>
+
+
+        <form [formGroup]="reporte4FormGroup" class="basic-form">
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref1 [matDatepicker]="picker3" placeholder="Fecha Inicio" formControlName="fechaInicio" >
+              <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+              <mat-datepicker #picker3></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte4FormGroup.controls['fechaInicio'].hasError('required') && reporte4FormGroup.controls['fechaInicio'].touched" class="text-danger support-text"> (Fecha inicio requerida.)</small>
+          </div>
+
+          <!-- column -->
+          <div fxFlex.gt-sm="40" fxFlex="100" class="p-10 errors-container">
+            <mat-form-field>
+              <input matInput #ref2 [matDatepicker]="picker4" placeholder="Fecha Fin" formControlName="fechaFin" >
+              <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+              <mat-datepicker #picker4></mat-datepicker>
+            </mat-form-field>
+            <small *ngIf="reporte4FormGroup.controls['fechaFin'].hasError('required') && reporte4FormGroup.controls['fechaFin'].touched" class="text-danger support-text"> (Fecha fin requerida.)</small>
+          </div>
+
+          <div class="example-button-row">
+
+            <button mat-fab matTooltip="Recargar" color="accent" mat-card-icon class="shadow-none" [disabled]="!reporte4FormGroup.valid || descargando"
+                    (click)="cargarReporte4Informacion(2)">
+              <mat-icon>loop</mat-icon>
+            </button>
+
+          </div>
+
+        </form>
+
+
+
+
+        <div class="responsive-table" *ngIf="reporte4Informacion">
+          <mat-table #table [dataSource]="dataSource">
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef> N° </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index;">
+                <span class="header-label">N°:</span>
+                {{i + 1}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Trabajador Column -->
+            <ng-container matColumnDef="empresa">
+              <mat-header-cell *matHeaderCellDef> Empresa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">Empresa:</span>
+                {{element.lavadero}}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Trabajador Column -->
+            <ng-container matColumnDef="nServicios">
+              <mat-header-cell *matHeaderCellDef> N° Servicios </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="header-label">N° Servicios:</span>
+                {{element.numeroServiciosPrestados}}
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <b><p *ngIf="reporte4Items.length === 0">No hay Registros</p></b>
+
+          </mat-table>
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!reporte4Informacion"></mat-progress-bar>
+
+        <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5]">
+        </mat-paginator>
+
+        <mat-divider></mat-divider>
+
+        <p *ngIf="reporte4Informacion">(Total Servicios: {{reporte4Informacion.granTotal}})</p>
+
+        <mat-divider></mat-divider>
+
+        <button mat-fab matTooltip="Exportar a Excel" color="warn" mat-card-icon class="shadow-none" (click)="exportarAExcelReporte4()" [disabled]="descargando">
+          <mat-icon>move_to_inbox</mat-icon>
+        </button>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- Column-->
+
+
+  <!-- column -->
+  <div fxFlex.gt-sm="30" fxFlex.gt-xs="30" fxFlex="30">
+    <mat-card class="bg-info" >
+      <mat-card-content>
+        <!-- column -->
+        <div class="d-flex no-block" *ngIf="numeroEmpresasVinculadas">
+          <div class="stats">
+            <h1 class="text-white m-0">{{numeroEmpresasVinculadas}}</h1>
+            <h6 class="text-white m-t-0">Empresas Vinculadas</h6>
+          </div>
+          <div class="stats-icon text-right ml-auto">
+            <i class="fa fa-user-circle-o display-5 op-3 text-white"></i>
+          </div>
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="!numeroEmpresasVinculadas"></mat-progress-bar>
+
+      </mat-card-content>
+    </mat-card>
+
+
+
+  </div>
+  <!-- column -->
+
+
+
+
+
+</div>
